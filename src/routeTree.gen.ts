@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
+import { Route as AuthenticatedEmailsRouteImport } from './routes/_authenticated.emails'
+import { Route as AuthenticatedExamsRouteImport } from './routes/_authenticated.exams'
+import { Route as AuthenticatedLeadAssignmentRouteImport } from './routes/_authenticated.lead-assignment'
 import { Route as AuthenticatedSeminarsRouteImport } from './routes/_authenticated.seminars'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated.students'
 
@@ -35,6 +38,22 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedEmailsRoute = AuthenticatedEmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedExamsRoute = AuthenticatedExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedLeadAssignmentRoute =
+  AuthenticatedLeadAssignmentRouteImport.update({
+    id: '/lead-assignment',
+    path: '/lead-assignment',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedSeminarsRoute = AuthenticatedSeminarsRouteImport.update({
   id: '/seminars',
   path: '/seminars',
@@ -50,6 +69,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/emails': typeof AuthenticatedEmailsRoute
+  '/exams': typeof AuthenticatedExamsRoute
+  '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
   '/seminars': typeof AuthenticatedSeminarsRoute
   '/students': typeof AuthenticatedStudentsRoute
 }
@@ -57,6 +79,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/emails': typeof AuthenticatedEmailsRoute
+  '/exams': typeof AuthenticatedExamsRoute
+  '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
   '/seminars': typeof AuthenticatedSeminarsRoute
   '/students': typeof AuthenticatedStudentsRoute
 }
@@ -66,20 +91,42 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/emails': typeof AuthenticatedEmailsRoute
+  '/_authenticated/exams': typeof AuthenticatedExamsRoute
+  '/_authenticated/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
   '/_authenticated/seminars': typeof AuthenticatedSeminarsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/dashboard' | '/seminars' | '/students'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/emails'
+    | '/exams'
+    | '/lead-assignment'
+    | '/seminars'
+    | '/students'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/seminars' | '/students'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/emails'
+    | '/exams'
+    | '/lead-assignment'
+    | '/seminars'
+    | '/students'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/emails'
+    | '/_authenticated/exams'
+    | '/_authenticated/lead-assignment'
     | '/_authenticated/seminars'
     | '/_authenticated/students'
   fileRoutesById: FileRoutesById
@@ -120,6 +167,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/emails': {
+      id: '/_authenticated/emails'
+      path: '/emails'
+      fullPath: '/emails'
+      preLoaderRoute: typeof AuthenticatedEmailsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/exams': {
+      id: '/_authenticated/exams'
+      path: '/exams'
+      fullPath: '/exams'
+      preLoaderRoute: typeof AuthenticatedExamsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/lead-assignment': {
+      id: '/_authenticated/lead-assignment'
+      path: '/lead-assignment'
+      fullPath: '/lead-assignment'
+      preLoaderRoute: typeof AuthenticatedLeadAssignmentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/seminars': {
       id: '/_authenticated/seminars'
       path: '/seminars'
@@ -139,12 +207,18 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEmailsRoute: typeof AuthenticatedEmailsRoute
+  AuthenticatedExamsRoute: typeof AuthenticatedExamsRoute
+  AuthenticatedLeadAssignmentRoute: typeof AuthenticatedLeadAssignmentRoute
   AuthenticatedSeminarsRoute: typeof AuthenticatedSeminarsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEmailsRoute: AuthenticatedEmailsRoute,
+  AuthenticatedExamsRoute: AuthenticatedExamsRoute,
+  AuthenticatedLeadAssignmentRoute: AuthenticatedLeadAssignmentRoute,
   AuthenticatedSeminarsRoute: AuthenticatedSeminarsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
 }
