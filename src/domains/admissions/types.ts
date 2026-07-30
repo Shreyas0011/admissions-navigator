@@ -33,3 +33,8 @@ export function canTransition(from: AdmissionStage, to: AdmissionStage): boolean
   const delta = stageIndex(to) - stageIndex(from);
   return delta === 1 || delta === -1;
 }
+
+/** Stages a student may legally move to from their current stage. */
+export function nextStages(from: AdmissionStage): AdmissionStage[] {
+  return STAGE_ORDER.filter((stage) => canTransition(from, stage));
+}
