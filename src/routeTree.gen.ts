@@ -16,7 +16,9 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEmailsRouteImport } from './routes/_authenticated.emails'
 import { Route as AuthenticatedExamsRouteImport } from './routes/_authenticated.exams'
 import { Route as AuthenticatedLeadAssignmentRouteImport } from './routes/_authenticated.lead-assignment'
+import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated.reports'
 import { Route as AuthenticatedSeminarsRouteImport } from './routes/_authenticated.seminars'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated.students'
 
 const IndexRoute = IndexRouteImport.update({
@@ -54,9 +56,19 @@ const AuthenticatedLeadAssignmentRoute =
     path: '/lead-assignment',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSeminarsRoute = AuthenticatedSeminarsRouteImport.update({
   id: '/seminars',
   path: '/seminars',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
@@ -72,7 +84,9 @@ export interface FileRoutesByFullPath {
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
   '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/seminars': typeof AuthenticatedSeminarsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
 }
 export interface FileRoutesByTo {
@@ -82,7 +96,9 @@ export interface FileRoutesByTo {
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
   '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/reports': typeof AuthenticatedReportsRoute
   '/seminars': typeof AuthenticatedSeminarsRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
 }
 export interface FileRoutesById {
@@ -94,7 +110,9 @@ export interface FileRoutesById {
   '/_authenticated/emails': typeof AuthenticatedEmailsRoute
   '/_authenticated/exams': typeof AuthenticatedExamsRoute
   '/_authenticated/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/seminars': typeof AuthenticatedSeminarsRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRoute
 }
 export interface FileRouteTypes {
@@ -106,7 +124,9 @@ export interface FileRouteTypes {
     | '/emails'
     | '/exams'
     | '/lead-assignment'
+    | '/reports'
     | '/seminars'
+    | '/settings'
     | '/students'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -116,7 +136,9 @@ export interface FileRouteTypes {
     | '/emails'
     | '/exams'
     | '/lead-assignment'
+    | '/reports'
     | '/seminars'
+    | '/settings'
     | '/students'
   id:
     | '__root__'
@@ -127,7 +149,9 @@ export interface FileRouteTypes {
     | '/_authenticated/emails'
     | '/_authenticated/exams'
     | '/_authenticated/lead-assignment'
+    | '/_authenticated/reports'
     | '/_authenticated/seminars'
+    | '/_authenticated/settings'
     | '/_authenticated/students'
   fileRoutesById: FileRoutesById
 }
@@ -188,11 +212,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeadAssignmentRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/reports': {
+      id: '/_authenticated/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/seminars': {
       id: '/_authenticated/seminars'
       path: '/seminars'
       fullPath: '/seminars'
       preLoaderRoute: typeof AuthenticatedSeminarsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/students': {
@@ -210,7 +248,9 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEmailsRoute: typeof AuthenticatedEmailsRoute
   AuthenticatedExamsRoute: typeof AuthenticatedExamsRoute
   AuthenticatedLeadAssignmentRoute: typeof AuthenticatedLeadAssignmentRoute
+  AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSeminarsRoute: typeof AuthenticatedSeminarsRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
 }
 
@@ -219,7 +259,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEmailsRoute: AuthenticatedEmailsRoute,
   AuthenticatedExamsRoute: AuthenticatedExamsRoute,
   AuthenticatedLeadAssignmentRoute: AuthenticatedLeadAssignmentRoute,
+  AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSeminarsRoute: AuthenticatedSeminarsRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
 }
 
