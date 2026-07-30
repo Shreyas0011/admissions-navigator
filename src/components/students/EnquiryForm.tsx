@@ -91,15 +91,15 @@ export function EnquiryForm({
       </FormField>
 
       <FormField label="Parent / guardian name" error={errors.parentName?.message}>
-        <Input {...form.register("parentName")} placeholder="Optional" />
+        <Input {...form.register("parentName")} placeholder="Priya Sharma" />
       </FormField>
 
       <FormField label="Parent / guardian phone" error={errors.parentPhone?.message}>
-        <Input {...form.register("parentPhone")} placeholder="Optional" />
+        <Input {...form.register("parentPhone")} placeholder="+91 90000 00000" />
       </FormField>
 
       <FormField label="Current school" error={errors.school?.message}>
-        <Input {...form.register("school")} placeholder="Optional" />
+        <Input {...form.register("school")} placeholder="Delhi Public School" />
       </FormField>
 
       <FormField label="Date of birth" error={errors.dateOfBirth?.message}>
