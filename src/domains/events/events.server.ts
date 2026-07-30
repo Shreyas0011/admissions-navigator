@@ -5,8 +5,8 @@ export async function listSeminars() {
   const [{ data: seminars, error }, { data: bookings, error: bookingError }] = await Promise.all([
     supabaseAdmin
       .from("seminars")
-      .select("id, title, seminar_type, venue, capacity, starts_at, ends_at, is_published")
-      .order("starts_at", { ascending: true }),
+      .select("id, title, seminar_type, venue, capacity, scheduled_at, is_open")
+      .order("scheduled_at", { ascending: true }),
     supabaseAdmin.from("seminar_bookings").select("seminar_id, status"),
   ]);
   if (error) throw new Error(error.message);
@@ -30,8 +30,8 @@ export async function listSeminars() {
 export async function listExams() {
   const { data, error } = await supabaseAdmin
     .from("exams")
-    .select("id, title, venue, capacity, starts_at, registration_closes_at, is_published")
-    .order("starts_at", { ascending: true });
+    .select("id, title, centre, capacity, scheduled_at")
+    .order("scheduled_at", { ascending: true });
   if (error) throw new Error(error.message);
 
   const { count, error: countError } = await supabaseAdmin
