@@ -171,7 +171,7 @@ export async function transitionStage(args: {
   const { data: current, error: readError } = await supabaseAdmin
     .from("students")
     .select("stage")
-    .eq("studentId" in args ? "id" : "id", args.studentId)
+    .eq("id", args.studentId)
     .maybeSingle();
 
   if (readError) throw new Error(readError.message);
