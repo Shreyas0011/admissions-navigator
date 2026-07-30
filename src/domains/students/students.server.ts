@@ -68,7 +68,11 @@ export async function queryRegistry(input: RegistryQuery): Promise<RegistryResul
   return { rows, total: count ?? 0, page: input.page, pageSize: input.pageSize, stats: await registryStats() };
 }
 
-async function countStudents(build: (q: ReturnType<typeof baseCount>) => typeof q) {
+async function countStudents(
+  build: (
+    q: ReturnType<typeof baseCount>,
+  ) => PromiseLike<{ count: number | null; error: { message: string } | null }>,
+) {
   const { count, error } = await build(baseCount());
   if (error) throw new Error(error.message);
   return count ?? 0;
