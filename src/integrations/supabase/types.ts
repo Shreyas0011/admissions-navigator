@@ -14,10 +14,237 @@ export type Database = {
   }
   public: {
     Tables: {
+      academic_years: {
+        Row: {
+          created_at: string
+          ends_on: string
+          id: string
+          is_active: boolean
+          label: string
+          starts_on: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_on: string
+          id?: string
+          is_active?: boolean
+          label: string
+          starts_on: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_on?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          starts_on?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      assignment_policies: {
+        Row: {
+          auto_assign: boolean
+          created_at: string
+          default_pool_id: string | null
+          enabled: boolean
+          fallback_algorithm: Database["public"]["Enums"]["assignment_algorithm"]
+          id: string
+          name: string
+          policy_type: Database["public"]["Enums"]["assignment_policy_type"]
+          priority: number
+          updated_at: string
+        }
+        Insert: {
+          auto_assign?: boolean
+          created_at?: string
+          default_pool_id?: string | null
+          enabled?: boolean
+          fallback_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          id?: string
+          name: string
+          policy_type?: Database["public"]["Enums"]["assignment_policy_type"]
+          priority?: number
+          updated_at?: string
+        }
+        Update: {
+          auto_assign?: boolean
+          created_at?: string
+          default_pool_id?: string | null
+          enabled?: boolean
+          fallback_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          id?: string
+          name?: string
+          policy_type?: Database["public"]["Enums"]["assignment_policy_type"]
+          priority?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_policies_default_pool_id_fkey"
+            columns: ["default_pool_id"]
+            isOneToOne: false
+            referencedRelation: "counsellor_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignment_rules: {
+        Row: {
+          algorithm: Database["public"]["Enums"]["assignment_algorithm"]
+          created_at: string
+          id: string
+          policy_id: string
+          pool_id: string
+          priority: number
+          programme_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          created_at?: string
+          id?: string
+          policy_id: string
+          pool_id: string
+          priority?: number
+          programme_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          created_at?: string
+          id?: string
+          policy_id?: string
+          pool_id?: string
+          priority?: number
+          programme_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_rules_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "assignment_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_rules_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "counsellor_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignment_rules_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assignments: {
+        Row: {
+          actor_id: string | null
+          actor_label: string
+          algorithm: Database["public"]["Enums"]["assignment_algorithm"] | null
+          candidates: Json
+          counsellor_id: string | null
+          created_at: string
+          id: string
+          policy_id: string | null
+          pool_id: string | null
+          programme_id: string | null
+          rule_id: string | null
+          rule_label: string | null
+          source: Database["public"]["Enums"]["assignment_source"]
+          student_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          actor_label?: string
+          algorithm?: Database["public"]["Enums"]["assignment_algorithm"] | null
+          candidates?: Json
+          counsellor_id?: string | null
+          created_at?: string
+          id?: string
+          policy_id?: string | null
+          pool_id?: string | null
+          programme_id?: string | null
+          rule_id?: string | null
+          rule_label?: string | null
+          source?: Database["public"]["Enums"]["assignment_source"]
+          student_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          actor_label?: string
+          algorithm?: Database["public"]["Enums"]["assignment_algorithm"] | null
+          candidates?: Json
+          counsellor_id?: string | null
+          created_at?: string
+          id?: string
+          policy_id?: string | null
+          pool_id?: string | null
+          programme_id?: string | null
+          rule_id?: string | null
+          rule_label?: string | null
+          source?: Database["public"]["Enums"]["assignment_source"]
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignments_counsellor_id_fkey"
+            columns: ["counsellor_id"]
+            isOneToOne: false
+            referencedRelation: "counsellors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_policy_id_fkey"
+            columns: ["policy_id"]
+            isOneToOne: false
+            referencedRelation: "assignment_policies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "counsellor_pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "assignment_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assignments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attendance: {
         Row: {
           booking_id: string
           id: string
+          programme_id: string | null
           scanned_at: string
           scanned_by: string | null
           seminar_id: string
@@ -26,6 +253,7 @@ export type Database = {
         Insert: {
           booking_id: string
           id?: string
+          programme_id?: string | null
           scanned_at?: string
           scanned_by?: string | null
           seminar_id: string
@@ -34,6 +262,7 @@ export type Database = {
         Update: {
           booking_id?: string
           id?: string
+          programme_id?: string | null
           scanned_at?: string
           scanned_by?: string | null
           seminar_id?: string
@@ -45,6 +274,13 @@ export type Database = {
             columns: ["booking_id"]
             isOneToOne: true
             referencedRelation: "seminar_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
             referencedColumns: ["id"]
           },
           {
@@ -107,6 +343,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      counsellor_pool_members: {
+        Row: {
+          counsellor_id: string
+          created_at: string
+          id: string
+          pool_id: string
+        }
+        Insert: {
+          counsellor_id: string
+          created_at?: string
+          id?: string
+          pool_id: string
+        }
+        Update: {
+          counsellor_id?: string
+          created_at?: string
+          id?: string
+          pool_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "counsellor_pool_members_counsellor_id_fkey"
+            columns: ["counsellor_id"]
+            isOneToOne: false
+            referencedRelation: "counsellors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "counsellor_pool_members_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "counsellor_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      counsellor_pools: {
+        Row: {
+          created_at: string
+          default_algorithm: Database["public"]["Enums"]["assignment_algorithm"]
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       counsellors: {
         Row: {
@@ -190,6 +492,131 @@ export type Database = {
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_sessions: {
+        Row: {
+          capacity: number
+          created_at: string
+          ends_at: string
+          event_id: string
+          id: string
+          is_open: boolean
+          reserved_seats: number
+          starts_at: string
+          updated_at: string
+          venue_id: string | null
+          waitlist_enabled: boolean
+          waitlist_size: number
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          ends_at: string
+          event_id: string
+          id?: string
+          is_open?: boolean
+          reserved_seats?: number
+          starts_at: string
+          updated_at?: string
+          venue_id?: string | null
+          waitlist_enabled?: boolean
+          waitlist_size?: number
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          ends_at?: string
+          event_id?: string
+          id?: string
+          is_open?: boolean
+          reserved_seats?: number
+          starts_at?: string
+          updated_at?: string
+          venue_id?: string | null
+          waitlist_enabled?: boolean
+          waitlist_size?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_sessions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_sessions_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          allocation_strategy: Database["public"]["Enums"]["allocation_strategy"]
+          allow_cancellation: boolean
+          auto_approve: boolean
+          cancellation_cutoff_hours: number
+          created_at: string
+          description: string | null
+          event_type: Database["public"]["Enums"]["event_type"]
+          id: string
+          is_open: boolean
+          programme_id: string | null
+          registration_closes_at: string | null
+          registration_opens_at: string | null
+          subject: string | null
+          target_stage: Database["public"]["Enums"]["admission_stage"] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          allocation_strategy?: Database["public"]["Enums"]["allocation_strategy"]
+          allow_cancellation?: boolean
+          auto_approve?: boolean
+          cancellation_cutoff_hours?: number
+          created_at?: string
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          id?: string
+          is_open?: boolean
+          programme_id?: string | null
+          registration_closes_at?: string | null
+          registration_opens_at?: string | null
+          subject?: string | null
+          target_stage?: Database["public"]["Enums"]["admission_stage"] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          allocation_strategy?: Database["public"]["Enums"]["allocation_strategy"]
+          allow_cancellation?: boolean
+          auto_approve?: boolean
+          cancellation_cutoff_hours?: number
+          created_at?: string
+          description?: string | null
+          event_type?: Database["public"]["Enums"]["event_type"]
+          id?: string
+          is_open?: boolean
+          programme_id?: string | null
+          registration_closes_at?: string | null
+          registration_opens_at?: string | null
+          subject?: string | null
+          target_stage?: Database["public"]["Enums"]["admission_stage"] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
             referencedColumns: ["id"]
           },
         ]
@@ -281,6 +708,7 @@ export type Database = {
           centre: string
           created_at: string
           id: string
+          programme_id: string | null
           scheduled_at: string
           title: string
           updated_at: string
@@ -290,6 +718,7 @@ export type Database = {
           centre: string
           created_at?: string
           id?: string
+          programme_id?: string | null
           scheduled_at: string
           title: string
           updated_at?: string
@@ -299,11 +728,20 @@ export type Database = {
           centre?: string
           created_at?: string
           id?: string
+          programme_id?: string | null
           scheduled_at?: string
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "exams_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       hall_tickets: {
         Row: {
@@ -377,6 +815,62 @@ export type Database = {
         }
         Relationships: []
       }
+      programmes: {
+        Row: {
+          academic_year_id: string | null
+          applications_close_at: string | null
+          applications_open_at: string | null
+          code: string
+          created_at: string
+          department: string
+          description: string | null
+          duration: string | null
+          id: string
+          intake: number
+          name: string
+          status: Database["public"]["Enums"]["programme_status"]
+          updated_at: string
+        }
+        Insert: {
+          academic_year_id?: string | null
+          applications_close_at?: string | null
+          applications_open_at?: string | null
+          code: string
+          created_at?: string
+          department?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          intake?: number
+          name: string
+          status?: Database["public"]["Enums"]["programme_status"]
+          updated_at?: string
+        }
+        Update: {
+          academic_year_id?: string | null
+          applications_close_at?: string | null
+          applications_open_at?: string | null
+          code?: string
+          created_at?: string
+          department?: string
+          description?: string | null
+          duration?: string | null
+          id?: string
+          intake?: number
+          name?: string
+          status?: Database["public"]["Enums"]["programme_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "programmes_academic_year_id_fkey"
+            columns: ["academic_year_id"]
+            isOneToOne: false
+            referencedRelation: "academic_years"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seminar_bookings: {
         Row: {
           booked_at: string
@@ -384,6 +878,7 @@ export type Database = {
           id: string
           qr_payload: string
           seminar_id: string
+          session_id: string | null
           status: Database["public"]["Enums"]["booking_status"]
           student_id: string
         }
@@ -393,6 +888,7 @@ export type Database = {
           id?: string
           qr_payload: string
           seminar_id: string
+          session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id: string
         }
@@ -402,6 +898,7 @@ export type Database = {
           id?: string
           qr_payload?: string
           seminar_id?: string
+          session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id?: string
         }
@@ -411,6 +908,13 @@ export type Database = {
             columns: ["seminar_id"]
             isOneToOne: false
             referencedRelation: "seminars"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seminar_bookings_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
             referencedColumns: ["id"]
           },
           {
@@ -428,6 +932,7 @@ export type Database = {
           created_at: string
           id: string
           is_open: boolean
+          programme_id: string | null
           scheduled_at: string
           seminar_type: Database["public"]["Enums"]["seminar_type"]
           title: string
@@ -439,6 +944,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_open?: boolean
+          programme_id?: string | null
           scheduled_at: string
           seminar_type: Database["public"]["Enums"]["seminar_type"]
           title: string
@@ -450,13 +956,22 @@ export type Database = {
           created_at?: string
           id?: string
           is_open?: boolean
+          programme_id?: string | null
           scheduled_at?: string
           seminar_type?: Database["public"]["Enums"]["seminar_type"]
           title?: string
           updated_at?: string
           venue?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seminars_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_events: {
         Row: {
@@ -513,6 +1028,7 @@ export type Database = {
           parent_name: string | null
           parent_phone: string | null
           phone: string
+          programme_id: string | null
           school: string | null
           stage: Database["public"]["Enums"]["admission_stage"]
           student_code: string
@@ -531,6 +1047,7 @@ export type Database = {
           parent_name?: string | null
           parent_phone?: string | null
           phone: string
+          programme_id?: string | null
           school?: string | null
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code: string
@@ -549,6 +1066,7 @@ export type Database = {
           parent_name?: string | null
           parent_phone?: string | null
           phone?: string
+          programme_id?: string | null
           school?: string | null
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code?: string
@@ -560,6 +1078,13 @@ export type Database = {
             columns: ["counsellor_id"]
             isOneToOne: false
             referencedRelation: "counsellors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "students_programme_id_fkey"
+            columns: ["programme_id"]
+            isOneToOne: false
+            referencedRelation: "programmes"
             referencedColumns: ["id"]
           },
         ]
@@ -582,6 +1107,48 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      venues: {
+        Row: {
+          building: string | null
+          campus: string
+          capacity: number
+          created_at: string
+          facilities: string[]
+          floor: string | null
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          updated_at: string
+        }
+        Insert: {
+          building?: string | null
+          campus?: string
+          capacity?: number
+          created_at?: string
+          facilities?: string[]
+          floor?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          updated_at?: string
+        }
+        Update: {
+          building?: string | null
+          campus?: string
+          capacity?: number
+          created_at?: string
+          facilities?: string[]
+          floor?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -611,11 +1178,29 @@ export type Database = {
         | "ACC_ATTENDED"
         | "EXAM_BOOKED"
         | "HALL_TICKET_GENERATED"
+      allocation_strategy:
+        | "FIRST_AVAILABLE"
+        | "LEAST_FILLED"
+        | "ROUND_ROBIN"
+        | "MANUAL"
       app_role:
         | "super_admin"
         | "admissions_admin"
         | "counsellor"
         | "ground_admin"
+      assignment_algorithm:
+        | "ROUND_ROBIN"
+        | "LEAST_WORKLOAD"
+        | "LEAST_ACTIVE"
+        | "MANUAL"
+      assignment_policy_type:
+        | "MANUAL"
+        | "ROUND_ROBIN"
+        | "LEAST_WORKLOAD"
+        | "LEAST_ACTIVE"
+        | "PROGRAMME_BASED"
+        | "HYBRID"
+      assignment_source: "AUTO" | "MANUAL"
       booking_status: "BOOKED" | "ATTENDED" | "CANCELLED" | "NO_SHOW"
       call_outcome:
         | "CONNECTED"
@@ -625,6 +1210,7 @@ export type Database = {
         | "NOT_INTERESTED"
         | "CALLBACK_REQUESTED"
       email_status: "QUEUED" | "SENT" | "FAILED" | "CANCELLED"
+      event_type: "WOC" | "ACC" | "EXAM" | "OTHER"
       lead_source:
         | "WEBSITE"
         | "REFERRAL"
@@ -633,6 +1219,7 @@ export type Database = {
         | "EDUCATION_FAIR"
         | "SCHOOL_VISIT"
         | "OTHER"
+      programme_status: "DRAFT" | "OPEN" | "CLOSED"
       seminar_type: "WOC" | "ACC"
     }
     CompositeTypes: {
@@ -772,12 +1359,33 @@ export const Constants = {
         "EXAM_BOOKED",
         "HALL_TICKET_GENERATED",
       ],
+      allocation_strategy: [
+        "FIRST_AVAILABLE",
+        "LEAST_FILLED",
+        "ROUND_ROBIN",
+        "MANUAL",
+      ],
       app_role: [
         "super_admin",
         "admissions_admin",
         "counsellor",
         "ground_admin",
       ],
+      assignment_algorithm: [
+        "ROUND_ROBIN",
+        "LEAST_WORKLOAD",
+        "LEAST_ACTIVE",
+        "MANUAL",
+      ],
+      assignment_policy_type: [
+        "MANUAL",
+        "ROUND_ROBIN",
+        "LEAST_WORKLOAD",
+        "LEAST_ACTIVE",
+        "PROGRAMME_BASED",
+        "HYBRID",
+      ],
+      assignment_source: ["AUTO", "MANUAL"],
       booking_status: ["BOOKED", "ATTENDED", "CANCELLED", "NO_SHOW"],
       call_outcome: [
         "CONNECTED",
@@ -788,6 +1396,7 @@ export const Constants = {
         "CALLBACK_REQUESTED",
       ],
       email_status: ["QUEUED", "SENT", "FAILED", "CANCELLED"],
+      event_type: ["WOC", "ACC", "EXAM", "OTHER"],
       lead_source: [
         "WEBSITE",
         "REFERRAL",
@@ -797,6 +1406,7 @@ export const Constants = {
         "SCHOOL_VISIT",
         "OTHER",
       ],
+      programme_status: ["DRAFT", "OPEN", "CLOSED"],
       seminar_type: ["WOC", "ACC"],
     },
   },
