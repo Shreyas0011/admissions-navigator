@@ -164,7 +164,7 @@ export async function createEnquiry(input: EnquiryInput) {
 export async function transitionStage(args: {
   studentId: string;
   toStage: AdmissionStage;
-  actorId: string;
+  actorId: string | null;
   actorLabel: string;
   reason?: string;
 }) {
@@ -205,7 +205,7 @@ export async function transitionStage(args: {
 export async function assignCounsellor(args: {
   studentId: string;
   counsellorId: string | null;
-  actorId: string;
+  actorId: string | null;
   actorLabel: string;
 }) {
   const { data: student, error } = await supabaseAdmin
