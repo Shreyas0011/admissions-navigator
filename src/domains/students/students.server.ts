@@ -164,7 +164,7 @@ export async function createEnquiry(input: EnquiryInput) {
 export async function transitionStage(args: {
   studentId: string;
   toStage: AdmissionStage;
-  actorId: string;
+  actorId: string | null;
   actorLabel: string;
   reason?: string;
 }) {
