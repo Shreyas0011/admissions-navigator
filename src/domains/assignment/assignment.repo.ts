@@ -1,17 +1,9 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import type { Candidate } from "./algorithms";
-import type { PolicyInput, PoolInput, RuleInput } from "./schema";
+import type { Database } from "@/integrations/supabase/types";
+import type { AssignmentAlgorithm, Candidate } from "./algorithms";
 
-export type PolicyRow = {
-  id: string;
-  name: string;
-  policy_type: string;
-  enabled: boolean;
-  auto_assign: boolean;
-  fallback_algorithm: Candidate extends never ? never : string;
-  default_pool_id: string | null;
-  priority: number;
-};
+export type AssignmentAuditRow = Database["public"]["Tables"]["assignments"]["Insert"];
+import type { PolicyInput, PoolInput, RuleInput } from "./schema";
 
 export async function selectActivePolicy() {
   const { data, error } = await supabaseAdmin
@@ -37,7 +29,7 @@ export async function selectRules(policyId: string) {
     policy_id: string;
     programme_id: string | null;
     pool_id: string;
-    algorithm: Candidate["id"] extends never ? never : string;
+    algorithm: AssignmentAlgorithm;
     priority: number;
     programmes: { name: string } | null;
     counsellor_pools: { name: string } | null;
@@ -146,7 +138,7 @@ export async function selectAssignmentLog(limit = 40) {
   }[];
 }
 
-export async function insertAssignmentAudit(row: Record<string, unknown>) {
+export async function insertAssignmentAudit(row: AssignmentAuditRow) {
   const { error } = await supabaseAdmin.from("assignments").insert(row);
   if (error) throw new Error(error.message);
 }
