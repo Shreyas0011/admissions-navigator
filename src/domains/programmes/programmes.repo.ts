@@ -4,14 +4,31 @@ import type { AcademicYearInput, ProgrammeInput, VenueInput } from "./schema";
 const PROGRAMME_COLUMNS =
   "id, code, name, department, intake, duration, description, status, academic_year_id, applications_open_at, applications_close_at, created_at";
 
-export async function selectProgrammes() {
+export type ProgrammeRow = {
+  id: string;
+  code: string;
+  name: string;
+  department: string;
+  intake: number;
+  duration: string | null;
+  description: string | null;
+  status: "DRAFT" | "OPEN" | "CLOSED";
+  academic_year_id: string | null;
+  applications_open_at: string | null;
+  applications_close_at: string | null;
+  created_at: string;
+  academic_years: { label: string } | null;
+};
+
+export async function selectProgrammes(): Promise<ProgrammeRow[]> {
   const { data, error } = await supabaseAdmin
     .from("programmes")
     .select(PROGRAMME_COLUMNS + ", academic_years(label)")
     .order("name");
   if (error) throw new Error(error.message);
-  return data ?? [];
+  return (data ?? []) as unknown as ProgrammeRow[];
 }
+
 
 export async function selectOpenProgrammes() {
   const { data, error } = await supabaseAdmin
