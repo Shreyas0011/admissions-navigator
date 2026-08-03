@@ -205,7 +205,7 @@ export async function transitionStage(args: {
 export async function assignCounsellor(args: {
   studentId: string;
   counsellorId: string | null;
-  actorId: string;
+  actorId: string | null;
   actorLabel: string;
 }) {
   const { data: student, error } = await supabaseAdmin
