@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import type { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -26,7 +27,7 @@ export function ProgrammeForm({ onDone }: { onDone: () => void }) {
     queryFn: () => listAcademicYearsFn(),
   });
 
-  const form = useForm<ProgrammeInput>({
+  const form = useForm<z.input<typeof programmeInputSchema>, unknown, ProgrammeInput>({
     resolver: zodResolver(programmeInputSchema),
     defaultValues: {
       code: "",

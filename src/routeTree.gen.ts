@@ -26,6 +26,8 @@ import { Route as PortalCounsellorRouteImport } from './routes/portal.counsellor
 import { Route as PortalExamsRouteImport } from './routes/portal.exams'
 import { Route as PortalProgressRouteImport } from './routes/portal.progress'
 import { Route as PortalSeminarsRouteImport } from './routes/portal.seminars'
+import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_authenticated.programmes.index'
+import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -112,6 +114,18 @@ const PortalSeminarsRoute = PortalSeminarsRouteImport.update({
   path: '/seminars',
   getParentRoute: () => PortalRoute,
 } as any)
+const AuthenticatedProgrammesIndexRoute =
+  AuthenticatedProgrammesIndexRouteImport.update({
+    id: '/programmes/',
+    path: '/programmes/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedProgrammesProgrammeIdRoute =
+  AuthenticatedProgrammesProgrammeIdRouteImport.update({
+    id: '/programmes/$programmeId',
+    path: '/programmes/$programmeId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,6 +144,8 @@ export interface FileRoutesByFullPath {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
+  '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/programmes/': typeof AuthenticatedProgrammesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -147,6 +163,8 @@ export interface FileRoutesByTo {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal': typeof PortalIndexRoute
+  '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/programmes': typeof AuthenticatedProgrammesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -167,6 +185,8 @@ export interface FileRoutesById {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
+  '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/_authenticated/programmes/': typeof AuthenticatedProgrammesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -187,6 +207,8 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/seminars'
     | '/portal/'
+    | '/programmes/$programmeId'
+    | '/programmes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -204,6 +226,8 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/seminars'
     | '/portal'
+    | '/programmes/$programmeId'
+    | '/programmes'
   id:
     | '__root__'
     | '/'
@@ -223,6 +247,8 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/seminars'
     | '/portal/'
+    | '/_authenticated/programmes/$programmeId'
+    | '/_authenticated/programmes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -353,6 +379,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalSeminarsRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/_authenticated/programmes/': {
+      id: '/_authenticated/programmes/'
+      path: '/programmes'
+      fullPath: '/programmes/'
+      preLoaderRoute: typeof AuthenticatedProgrammesIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/programmes/$programmeId': {
+      id: '/_authenticated/programmes/$programmeId'
+      path: '/programmes/$programmeId'
+      fullPath: '/programmes/$programmeId'
+      preLoaderRoute: typeof AuthenticatedProgrammesProgrammeIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -365,6 +405,8 @@ interface AuthenticatedRouteChildren {
   AuthenticatedSeminarsRoute: typeof AuthenticatedSeminarsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
+  AuthenticatedProgrammesProgrammeIdRoute: typeof AuthenticatedProgrammesProgrammeIdRoute
+  AuthenticatedProgrammesIndexRoute: typeof AuthenticatedProgrammesIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -376,6 +418,9 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedSeminarsRoute: AuthenticatedSeminarsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
+  AuthenticatedProgrammesProgrammeIdRoute:
+    AuthenticatedProgrammesProgrammeIdRoute,
+  AuthenticatedProgrammesIndexRoute: AuthenticatedProgrammesIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
