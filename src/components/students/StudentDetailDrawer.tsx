@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, ArrowRight, Mail, Phone, School, User } from "lucide-react";
+import { Loader2, ArrowRight, BookOpen, Mail, Phone, School, User, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
@@ -15,7 +15,8 @@ import { StageBadge } from "@/components/shared/StageBadge";
 import { STAGE_MAP } from "@/config/constants";
 import { nextStages } from "@/domains/admissions/types";
 import type { AdmissionStage } from "@/domains/admissions/types";
-import { getStudent, moveStudentStage } from "@/domains/students/students.functions";
+import { getStudentDetailFn, moveStudentStage } from "@/domains/students/students.functions";
+import { runAssignmentFn } from "@/domains/assignment/assignment.functions";
 
 function formatDate(value: string) {
   return new Date(value).toLocaleString(undefined, {
@@ -38,7 +39,7 @@ export function StudentDetailDrawer({
 
   const { data, isLoading } = useQuery({
     queryKey: ["student", studentId],
-    queryFn: () => getStudent({ data: { id: studentId! } }),
+    queryFn: () => getStudentDetailFn({ data: { id: studentId! } }),
     enabled: Boolean(studentId),
   });
 
@@ -49,6 +50,18 @@ export function StudentDetailDrawer({
       toast.success(`Moved to ${STAGE_MAP[result.to as AdmissionStage].label}`);
       queryClient.invalidateQueries({ queryKey: ["student", studentId] });
       queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+    onError: (error: Error) => toast.error(error.message),
+  });
+
+  const assign = useMutation({
+    mutationFn: () => runAssignmentFn({ data: { studentId: studentId! } }),
+    onSuccess: (decision) => {
+      if (decision.assigned) toast.success(`Assigned to ${decision.counsellorName}`);
+      else toast.error(decision.reason ?? "No counsellor could be matched");
+      queryClient.invalidateQueries({ queryKey: ["student", studentId] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["engine-console"] });
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -101,10 +114,76 @@ export function StudentDetailDrawer({
                   value={student.counsellor_name ?? "Unassigned"}
                 />
                 <Field
+                  icon={<BookOpen className="size-4" />}
+                  label="Programme applied to"
+                  value={data?.programme?.name ?? "Not selected"}
+                />
+                <Field
                   icon={<ArrowRight className="size-4" />}
                   label="Lead source"
                   value={student.lead_source.replace("_", " ").toLowerCase()}
                 />
+              </section>
+
+              <section>
+                <h3 className="label-caps text-muted-foreground">Assignment engine</h3>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Button size="sm" disabled={assign.isPending} onClick={() => assign.mutate()}>
+                    {assign.isPending ? (
+                      <Loader2 className="mr-2 size-3.5 animate-spin" />
+                    ) : (
+                      <Wand2 className="mr-2 size-3.5" />
+                    )}
+                    {student.counsellor_name ? "Reassign" : "Auto-assign"}
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    Runs the active policy: rule → pool → algorithm.
+                  </span>
+                </div>
+                <ol className="mt-4 space-y-3">
+                  {(data?.assignments ?? []).map((row) => (
+                    <li key={row.id} className="rounded-xl bg-surface-low px-4 py-3 text-xs">
+                      <p className="text-sm font-medium text-foreground">
+                        {row.counsellors?.full_name ?? "No match"} ·{" "}
+                        {row.algorithm?.replace(/_/g, " ") ?? "—"} ({row.source})
+                      </p>
+                      <p className="text-muted-foreground">
+                        {row.rule_label} · {formatDate(row.created_at)}
+                      </p>
+                      <p className="mt-1 text-muted-foreground">
+                        Candidates:{" "}
+                        {(row.candidates ?? []).map((c) => `${c.name} (${c.activeLeads})`).join(", ") ||
+                          "none"}
+                      </p>
+                    </li>
+                  ))}
+                  {(data?.assignments ?? []).length === 0 && (
+                    <li className="text-xs text-muted-foreground">No assignment history yet.</li>
+                  )}
+                </ol>
+              </section>
+
+              <section>
+                <h3 className="label-caps text-muted-foreground">Seminar bookings</h3>
+                <ul className="mt-3 space-y-2">
+                  {(data?.bookings ?? []).map((b) => (
+                    <li key={b.id} className="rounded-xl bg-surface-low px-4 py-3 text-xs">
+                      <span className="text-sm font-medium text-foreground">
+                        {b.events?.title ?? "Session"}
+                      </span>{" "}
+                      <span className="font-mono text-primary">{b.booking_ref}</span>
+                      <p className="text-muted-foreground">
+                        {b.event_sessions
+                          ? `${formatDate(b.event_sessions.starts_at)} · ${b.event_sessions.venues?.name ?? "Venue TBC"}`
+                          : "Schedule TBC"}{" "}
+                        · {b.status}
+                      </p>
+                    </li>
+                  ))}
+                  {(data?.bookings ?? []).length === 0 && (
+                    <li className="text-xs text-muted-foreground">No bookings yet.</li>
+                  )}
+                </ul>
               </section>
 
               <section>

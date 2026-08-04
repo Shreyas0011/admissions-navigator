@@ -57,3 +57,32 @@ export const stageTransitionSchema = z.object({
   toStage: admissionStageSchema,
   reason: z.string().trim().max(500).optional(),
 });
+
+/** Module 1b — public application that also provisions the student's login. */
+export const applicationSchema = enquirySchema
+  .extend({
+    programmeId: z.string().uuid("Please choose a programme"),
+    password: z.string().min(8, "Use at least 8 characters").max(72),
+    confirmPassword: z.string(),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ApplicationInput = z.infer<typeof applicationSchema>;
+
+export const callLogSchema = z.object({
+  studentId: z.string().uuid(),
+  outcome: z.enum([
+    "CONNECTED",
+    "NO_ANSWER",
+    "BUSY",
+    "WRONG_NUMBER",
+    "NOT_INTERESTED",
+    "CALLBACK_REQUESTED",
+  ]),
+  notes: z.string().trim().max(1000).optional(),
+});
+
+export type CallLogInput = z.infer<typeof callLogSchema>;

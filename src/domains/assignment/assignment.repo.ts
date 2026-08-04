@@ -131,7 +131,7 @@ export async function selectAssignmentLog(limit = 40) {
     source: string;
     rule_label: string | null;
     actor_label: string;
-    candidates: unknown;
+    candidates: { id: string; name: string; activeLeads: number }[];
     created_at: string;
     students: { full_name: string; student_code: string } | null;
     counsellors: { full_name: string } | null;
