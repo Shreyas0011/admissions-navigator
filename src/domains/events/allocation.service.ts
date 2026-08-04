@@ -1,4 +1,5 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { AdmissionStage } from "@/domains/admissions/types";
 import { bookSession, getEventDetail, type SessionSummary } from "./events.service";
 
 type Strategy = "FIRST_AVAILABLE" | "LEAST_FILLED" | "ROUND_ROBIN" | "MANUAL";
