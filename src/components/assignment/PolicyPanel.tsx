@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createPolicyFn, togglePolicyFn, updatePolicyFn } from "@/domains/assignment/assignment.functions";
+import type { PolicyInput } from "@/domains/assignment/schema";
 import { ALGORITHMS, POLICY_TYPES, type EnginePolicy, type EnginePool } from "./types";
 
 export function PolicyPanel({
@@ -51,8 +52,7 @@ export function PolicyPanel({
   });
 
   const update = useMutation({
-    mutationFn: (input: Parameters<typeof updatePolicyFn>[0]["data"]) =>
-      updatePolicyFn({ data: input }),
+    mutationFn: (input: PolicyInput) => updatePolicyFn({ data: input }),
     onSuccess: invalidate,
     onError: (e: Error) => toast.error(e.message),
   });
