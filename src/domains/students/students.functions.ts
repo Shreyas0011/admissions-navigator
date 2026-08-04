@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 import {
+  applicationSchema,
+  callLogSchema,
   enquirySchema,
   registryQuerySchema,
   stageTransitionSchema,
@@ -70,4 +72,30 @@ export const assignStudentCounsellor = createServerFn({ method: "POST" })
       actorId: context.userId,
       actorLabel: actor.label,
     });
+  });
+
+/** Public: application + account creation in one call. */
+export const submitApplication = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => applicationSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { createApplicationAccount } = await import("@/domains/students/applications.server");
+    return createApplicationAccount(data);
+  });
+
+export const getStudentDetailFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const { getStudentDetail } = await import("@/domains/students/detail.server");
+    return getStudentDetail(data.id);
+  });
+
+export const logStudentCall = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => callLogSchema.parse(input))
+  .handler(async ({ data, context }) => {
+    const { requireStaff } = await import("@/domains/users/access.server");
+    await requireStaff(context.supabase, context.userId);
+    const { logCall } = await import("@/domains/counsellors/leads.server");
+    return logCall(context.userId, data);
   });
