@@ -1,12 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, MapPin, Users, Wand2 } from "lucide-react";
+import { CalendarClock, MapPin, Plus, Users, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { EventForm } from "@/components/events/EventForm";
 import {
   autoAllocateFn,
   listEventsFn,
@@ -27,6 +30,7 @@ export const Route = createFileRoute("/_authenticated/seminars/")({
 });
 
 function SeminarsPage() {
+  const [open, setOpen] = useState(false);
   const queryClient = useQueryClient();
   const { data, isLoading } = useQuery({
     queryKey: ["events"],
@@ -59,7 +63,21 @@ function SeminarsPage() {
         eyebrow="Scheduling engine"
         title="Seminar builder"
         description="Events define what happens; sessions define when and where. Publish to open self-registration."
+        actions={
+          <Button className="h-auto rounded-2xl px-6" onClick={() => setOpen(true)}>
+            <Plus className="size-4" /> New Event
+          </Button>
+        }
       />
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>New event</DialogTitle>
+          </DialogHeader>
+          <EventForm onDone={() => setOpen(false)} />
+        </DialogContent>
+      </Dialog>
 
       {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2">
@@ -133,6 +151,11 @@ function SeminarsPage() {
                     disabled={allocate.isPending}
                   >
                     <Wand2 className="mr-1 size-4" /> Auto-allocate
+                  </Button>
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/seminars/$eventId" params={{ eventId: event.id }}>
+                      Manage
+                    </Link>
                   </Button>
                 </div>
               </article>
