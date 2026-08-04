@@ -47,6 +47,25 @@ export async function listProgrammes(): Promise<ProgrammeSummary[]> {
   });
 }
 
+/** Single programme with its applicant pipeline breakdown. */
+export async function getProgrammeDetail(id: string) {
+  const all = await listProgrammes();
+  const programme = all.find((p) => p.id === id);
+  if (!programme) throw new Error("Programme not found");
+
+  const students = await selectProgrammeStudentCounts();
+  const stages = new Map<string, number>();
+  for (const s of students) {
+    if (s.programme_id !== id) continue;
+    stages.set(s.stage, (stages.get(s.stage) ?? 0) + 1);
+  }
+
+  return {
+    programme,
+    stageBreakdown: [...stages.entries()].map(([stage, count]) => ({ stage, count })),
+  };
+}
+
 export const listOpenProgrammes = selectOpenProgrammes;
 export const listAcademicYears = selectAcademicYears;
 export const createAcademicYear = (input: AcademicYearInput) => insertAcademicYear(input);
