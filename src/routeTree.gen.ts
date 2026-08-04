@@ -17,6 +17,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedEmailsRouteImport } from './routes/_authenticated.emails'
 import { Route as AuthenticatedExamsRouteImport } from './routes/_authenticated.exams'
 import { Route as AuthenticatedLeadAssignmentRouteImport } from './routes/_authenticated.lead-assignment'
+import { Route as AuthenticatedMyLeadsRouteImport } from './routes/_authenticated.my-leads'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated.reports'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated.students'
@@ -28,6 +29,7 @@ import { Route as PortalSeminarsRouteImport } from './routes/portal.seminars'
 import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_authenticated.programmes.index'
 import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
 import { Route as AuthenticatedSeminarsIndexRouteImport } from './routes/_authenticated.seminars.index'
+import { Route as AuthenticatedSeminarsEventIdRouteImport } from './routes/_authenticated.seminars.$eventId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -69,6 +71,11 @@ const AuthenticatedLeadAssignmentRoute =
     path: '/lead-assignment',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedMyLeadsRoute = AuthenticatedMyLeadsRouteImport.update({
+  id: '/my-leads',
+  path: '/my-leads',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -127,6 +134,12 @@ const AuthenticatedSeminarsIndexRoute =
     path: '/seminars/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedSeminarsEventIdRoute =
+  AuthenticatedSeminarsEventIdRouteImport.update({
+    id: '/seminars/$eventId',
+    path: '/seminars/$eventId',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -136,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
   '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/my-leads': typeof AuthenticatedMyLeadsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
@@ -145,6 +159,7 @@ export interface FileRoutesByFullPath {
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
   '/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -155,6 +170,7 @@ export interface FileRoutesByTo {
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
   '/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/my-leads': typeof AuthenticatedMyLeadsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
@@ -164,6 +180,7 @@ export interface FileRoutesByTo {
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal': typeof PortalIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
   '/programmes': typeof AuthenticatedProgrammesIndexRoute
   '/seminars': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -177,6 +194,7 @@ export interface FileRoutesById {
   '/_authenticated/emails': typeof AuthenticatedEmailsRoute
   '/_authenticated/exams': typeof AuthenticatedExamsRoute
   '/_authenticated/lead-assignment': typeof AuthenticatedLeadAssignmentRoute
+  '/_authenticated/my-leads': typeof AuthenticatedMyLeadsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRoute
@@ -186,6 +204,7 @@ export interface FileRoutesById {
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
   '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
+  '/_authenticated/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
   '/_authenticated/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/_authenticated/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -199,6 +218,7 @@ export interface FileRouteTypes {
     | '/emails'
     | '/exams'
     | '/lead-assignment'
+    | '/my-leads'
     | '/reports'
     | '/settings'
     | '/students'
@@ -208,6 +228,7 @@ export interface FileRouteTypes {
     | '/portal/seminars'
     | '/portal/'
     | '/programmes/$programmeId'
+    | '/seminars/$eventId'
     | '/programmes/'
     | '/seminars/'
   fileRoutesByTo: FileRoutesByTo
@@ -218,6 +239,7 @@ export interface FileRouteTypes {
     | '/emails'
     | '/exams'
     | '/lead-assignment'
+    | '/my-leads'
     | '/reports'
     | '/settings'
     | '/students'
@@ -227,6 +249,7 @@ export interface FileRouteTypes {
     | '/portal/seminars'
     | '/portal'
     | '/programmes/$programmeId'
+    | '/seminars/$eventId'
     | '/programmes'
     | '/seminars'
   id:
@@ -239,6 +262,7 @@ export interface FileRouteTypes {
     | '/_authenticated/emails'
     | '/_authenticated/exams'
     | '/_authenticated/lead-assignment'
+    | '/_authenticated/my-leads'
     | '/_authenticated/reports'
     | '/_authenticated/settings'
     | '/_authenticated/students'
@@ -248,6 +272,7 @@ export interface FileRouteTypes {
     | '/portal/seminars'
     | '/portal/'
     | '/_authenticated/programmes/$programmeId'
+    | '/_authenticated/seminars/$eventId'
     | '/_authenticated/programmes/'
     | '/_authenticated/seminars/'
   fileRoutesById: FileRoutesById
@@ -315,6 +340,13 @@ declare module '@tanstack/react-router' {
       path: '/lead-assignment'
       fullPath: '/lead-assignment'
       preLoaderRoute: typeof AuthenticatedLeadAssignmentRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/my-leads': {
+      id: '/_authenticated/my-leads'
+      path: '/my-leads'
+      fullPath: '/my-leads'
+      preLoaderRoute: typeof AuthenticatedMyLeadsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/reports': {
@@ -394,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSeminarsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/seminars/$eventId': {
+      id: '/_authenticated/seminars/$eventId'
+      path: '/seminars/$eventId'
+      fullPath: '/seminars/$eventId'
+      preLoaderRoute: typeof AuthenticatedSeminarsEventIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -402,10 +441,12 @@ interface AuthenticatedRouteChildren {
   AuthenticatedEmailsRoute: typeof AuthenticatedEmailsRoute
   AuthenticatedExamsRoute: typeof AuthenticatedExamsRoute
   AuthenticatedLeadAssignmentRoute: typeof AuthenticatedLeadAssignmentRoute
+  AuthenticatedMyLeadsRoute: typeof AuthenticatedMyLeadsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedStudentsRoute: typeof AuthenticatedStudentsRoute
   AuthenticatedProgrammesProgrammeIdRoute: typeof AuthenticatedProgrammesProgrammeIdRoute
+  AuthenticatedSeminarsEventIdRoute: typeof AuthenticatedSeminarsEventIdRoute
   AuthenticatedProgrammesIndexRoute: typeof AuthenticatedProgrammesIndexRoute
   AuthenticatedSeminarsIndexRoute: typeof AuthenticatedSeminarsIndexRoute
 }
@@ -415,11 +456,13 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedEmailsRoute: AuthenticatedEmailsRoute,
   AuthenticatedExamsRoute: AuthenticatedExamsRoute,
   AuthenticatedLeadAssignmentRoute: AuthenticatedLeadAssignmentRoute,
+  AuthenticatedMyLeadsRoute: AuthenticatedMyLeadsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedStudentsRoute: AuthenticatedStudentsRoute,
   AuthenticatedProgrammesProgrammeIdRoute:
     AuthenticatedProgrammesProgrammeIdRoute,
+  AuthenticatedSeminarsEventIdRoute: AuthenticatedSeminarsEventIdRoute,
   AuthenticatedProgrammesIndexRoute: AuthenticatedProgrammesIndexRoute,
   AuthenticatedSeminarsIndexRoute: AuthenticatedSeminarsIndexRoute,
 }
