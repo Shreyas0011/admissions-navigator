@@ -25,6 +25,7 @@ import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalCounsellorRouteImport } from './routes/portal.counsellor'
 import { Route as PortalExamsRouteImport } from './routes/portal.exams'
 import { Route as PortalProgressRouteImport } from './routes/portal.progress'
+import { Route as PortalSeminarsRouteImport } from './routes/portal.seminars'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -106,6 +107,11 @@ const PortalProgressRoute = PortalProgressRouteImport.update({
   path: '/progress',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalSeminarsRoute = PortalSeminarsRouteImport.update({
+  id: '/seminars',
+  path: '/seminars',
+  getParentRoute: () => PortalRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
 }
 export interface FileRoutesByTo {
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/seminars': typeof PortalSeminarsRoute
   '/portal': typeof PortalIndexRoute
 }
 export interface FileRoutesById {
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
 }
 export interface FileRouteTypes {
@@ -176,6 +185,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/seminars'
     | '/portal/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/seminars'
     | '/portal'
   id:
     | '__root__'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/seminars'
     | '/portal/'
   fileRoutesById: FileRoutesById
 }
@@ -334,6 +346,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProgressRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/seminars': {
+      id: '/portal/seminars'
+      path: '/seminars'
+      fullPath: '/portal/seminars'
+      preLoaderRoute: typeof PortalSeminarsRouteImport
+      parentRoute: typeof PortalRoute
+    }
   }
 }
 
@@ -367,6 +386,7 @@ interface PortalRouteChildren {
   PortalCounsellorRoute: typeof PortalCounsellorRoute
   PortalExamsRoute: typeof PortalExamsRoute
   PortalProgressRoute: typeof PortalProgressRoute
+  PortalSeminarsRoute: typeof PortalSeminarsRoute
   PortalIndexRoute: typeof PortalIndexRoute
 }
 
@@ -374,6 +394,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalCounsellorRoute: PortalCounsellorRoute,
   PortalExamsRoute: PortalExamsRoute,
   PortalProgressRoute: PortalProgressRoute,
+  PortalSeminarsRoute: PortalSeminarsRoute,
   PortalIndexRoute: PortalIndexRoute,
 }
 
