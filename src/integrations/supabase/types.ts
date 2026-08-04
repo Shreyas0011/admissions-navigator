@@ -875,9 +875,10 @@ export type Database = {
         Row: {
           booked_at: string
           booking_ref: string
+          event_id: string | null
           id: string
           qr_payload: string
-          seminar_id: string
+          seminar_id: string | null
           session_id: string | null
           status: Database["public"]["Enums"]["booking_status"]
           student_id: string
@@ -885,9 +886,10 @@ export type Database = {
         Insert: {
           booked_at?: string
           booking_ref: string
+          event_id?: string | null
           id?: string
           qr_payload: string
-          seminar_id: string
+          seminar_id?: string | null
           session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id: string
@@ -895,14 +897,22 @@ export type Database = {
         Update: {
           booked_at?: string
           booking_ref?: string
+          event_id?: string | null
           id?: string
           qr_payload?: string
-          seminar_id?: string
+          seminar_id?: string | null
           session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "seminar_bookings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "seminar_bookings_seminar_id_fkey"
             columns: ["seminar_id"]
@@ -1033,6 +1043,7 @@ export type Database = {
           stage: Database["public"]["Enums"]["admission_stage"]
           student_code: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           counsellor_id?: string | null
@@ -1052,6 +1063,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           counsellor_id?: string | null
@@ -1071,6 +1083,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1158,6 +1171,7 @@ export type Database = {
     }
     Functions: {
       current_counsellor_id: { Args: never; Returns: string }
+      current_student_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
