@@ -1,74 +1,44 @@
-# Programme-Centric Refactor + Two Engines
+# Wire the three engines to UI, then test end-to-end
 
-Confirmed current state: `students.course` is free text, `seminars.venue` is free text with a single embedded date/capacity, counsellor assignment is a manual `counsellor_id` write in `students.server.ts`, and there is no programme, venue, pool, or policy table. Everything below is additive schema plus a re-point of existing reads — no data loss.
+Current state (verified): the programme and assignment engine layers exist as repo/service/schema only — there are no server functions and no routes for them. The seminars page still reads the legacy seminar tables, not the new events/sessions model. So the requested walkthrough cannot be tested yet; this plan wires the missing controller + UI layers first, then gives the test script.
 
-## 1. Domain shift: Programme as aggregate root
+## What gets built
 
-New tables (one migration, with GRANTs → RLS → policies, admin-write / staff-read):
+### 1. Course (Programme) Management
+- `programmes.functions.ts` controller: list, get, create, update, open/close applications.
+- Routes: `/programmes` (registry table: code, name, department, intake, applications, fill rate, status) and `/programmes/$programmeId` (detail with tabs: Overview, Applicants, Events, Assignment rules).
+- Components under `src/components/programmes/`: `ProgrammeTable`, `ProgrammeForm`, `ProgrammeFilters`, `ProgrammeStats`, `ProgrammeDetailTabs` — each under 200 LOC, exported via an index barrel.
 
-```text
-academic_years      programmes (code, name, department, year, intake, duration,
-                                status, applications_open_at, applications_close_at)
-venues (campus, building, floor, room, capacity, facilities, priority, is_active)
-counsellor_pools    counsellor_pool_members
-assignment_policies (type, enabled, priority, fallback, auto_assign)
-assignment_rules    (condition_programme_id, target_pool_id, algorithm)
-assignments         (student, counsellor, rule, algorithm, candidates, source, actor)
-events              (programme scope, type WOC|ACC|EXAM|OTHER, registration rules)
-event_sessions      (starts_at, ends_at, venue_id, capacity, reserved, allocation_strategy)
-```
+### 2. Lead Assignment Engine
+- `assignment.functions.ts` controller: list/create/update policies, rules, pools and pool members; run assignment for a student; fetch assignment audit trail.
+- Route `/lead-assignment` rebuilt as an engine console with three tabs: Policies (type, algorithm, auto-assign toggle, priority), Pools (members, workload), Rules (programme -> pool -> algorithm).
+- Student drawer gains "Auto-assign" and "Reassign" actions calling the engine, plus an assignment history list showing algorithm, rule used and candidates considered.
 
-Changes to existing tables:
-- `students.programme_id` (FK, nullable during backfill) alongside the existing `course` text, which becomes display-only legacy. Backfill by matching seeded course names to seeded programmes.
-- `seminars` / `seminar_bookings` / `attendance` / `exams`: add `programme_id`; bookings gain `session_id`. Existing `seminars` rows are migrated into `events` + one `event_sessions` row each, so today's screens keep working.
+### 3. Seminar / Event Builder
+- `events.functions.ts` rewritten on the events + event_sessions + venues model: list events, create event, add sessions, open/close registration, book a student into a session, list bookings, attendance scan.
+- Route `/seminars` becomes the builder: event list plus a wizard (Event details -> Sessions & venues -> Allocation strategy & capacity -> Publish).
+- `/seminars/$eventId` shows sessions, seat usage, bookings and auto-allocation controls.
+- Auto-allocation service applies the event's strategy (FIRST_AVAILABLE, LEAST_FILLED, ROUND_ROBIN) across eligible students of the event's programme, respecting capacity, waitlist and target stage, and advances stages + queues emails.
 
-Stage machine stays as-is — it now runs *within* a programme application, which the events + assignments audit rows already scope.
+### 4. Counsellor portal
+- Route `/my-leads` for the counsellor role: leads assigned to the signed-in counsellor, call logging, stage advance, and booking a student into a seminar session.
+- Sidebar becomes role-aware: admins see Programmes / Lead Assignment / Seminars / Exams / Emails / Reports / Settings; counsellors see Dashboard / My Leads / Seminars.
 
-## 2. Assignment Engine (configuration, not code)
+## Technical notes
+- Layering kept strict: route -> `*.functions.ts` (controller, `createServerFn` + zod) -> `*.service.ts` -> `*.repo.ts`. Routes never touch Supabase directly.
+- Protected server functions use `requireSupabaseAuth`; all reads through TanStack Query (`ensureQueryData` in loaders under `_authenticated`, `useSuspenseQuery` in components).
+- Every new file stays under 200 LOC with single barrel imports/exports per feature folder.
+- No schema change is expected; the tables (programmes, counsellor_pools, assignment_policies/rules, assignments, events, event_sessions, venues, seminar_bookings, attendance) already exist.
 
-- Service `domains/assignment/` with one `resolveAssignment(student)` entry: match rules by programme → target pool → run algorithm → fall back to the default pool/policy.
-- Algorithms as a small strategy map: `round_robin`, `least_workload`, `least_active`, `manual`. Adding one later = one map entry.
-- Every decision writes an `assignments` audit row (rule matched, algorithm, eligible counsellors considered, chosen, auto vs manual, actor).
-- Called automatically on enquiry submit when auto-assign is on; the existing manual assign path writes the same audit row with `source = 'manual'`.
-- Admin UI: `/settings/assignment` (current policy, fallback, default pool, auto-assign toggle), pool builder, and per-programme rule rows. `/lead-assignment` gains an Unassigned queue with a "Run engine" action and a decision log.
+## Test script (after the build)
 
-## 3. Seminar / Event Engine
-
-- Event (what) → Sessions (when + venue + capacity) → Booking (source of truth for QR, attendance, emails).
-- Booking allocation strategies: `first_available`, `least_filled`, `round_robin`, `manual` — the student picks an event, the engine picks the session/venue.
-- Capacity respects reserved seats and waiting list; timestamps stored as `timestamptz` only.
-- Admin UI: event builder (basics → schedule/sessions → capacity → venue → registration rules → target audience), plus live utilisation per event with a session breakdown.
-- Venues become a managed list reused across events.
-
-## 4. Architecture (4 layers, enforced)
-
-```text
-src/routes/<page>.tsx              thin, renders a feature shell
-src/domains/<domain>/
-  <domain>.functions.ts   controller  createServerFn only, declarations + imports
-  <domain>.service.ts     service     rules, engines, orchestration
-  <domain>.repo.ts        repo        the only file touching supabaseAdmin
-  schema.ts  types.ts     contracts
-src/components/<feature>/index.ts   barrel; pages import the barrel only
-```
-
-Existing `*.server.ts` files split into `.service.ts` + `.repo.ts` as they are touched — no big-bang rewrite. Every file stays under 200 LOC; components stay presentational and reusable.
-
-## 5. Screens touched
-
-- Enquiry form: free-text course → programme dropdown fed from published programmes.
-- New `/programmes` (list + builder) and `/venues`; sidebar reordered so Programmes is first.
-- Students registry, dashboard, and reports gain a programme filter and programme-scoped rollups (applications → assigned → attendance → exam → admissions).
-- Seminars page becomes the event/session view; exams get a programme column.
-
-## 6. Verification
-
-One runnable assert-based check per engine — `resolveAssignment` over a fixed pool set (round robin cycles, least workload picks the minimum, no eligible counsellor falls back), and session allocation (least filled picks the emptiest, full session overflows to waiting list). No framework, no fixtures.
-
-## Build order
-
-1. Migration: programmes, academic years, venues, `programme_id` columns + backfill, seminars → events/sessions.
-2. Programme + venue domain, routes, and the enquiry-form dropdown.
-3. Assignment Engine: schema already in step 1, service + audit + admin config screens.
-4. Event Engine: builder, allocation, booking rewrite, utilisation dashboard.
-5. Programme-scoped dashboard and reports.
+1. **Admin login** — sign in at `/auth` with Google as shreyas.777999@gmail.com (already super_admin). Full sidebar should render.
+2. **Course configuration** — `/programmes` -> New Programme: code, name, department, academic year, intake, application window -> save -> status Open. Confirm it appears in the registry with 0 applications.
+3. **Student application** — sign out (or open an incognito tab) -> `/` public enquiry form -> pick the new programme -> submit -> note the STU-2026-XXXX reference.
+4. **Assignment engine config** — back as admin, `/lead-assignment`: create a pool, add 2-3 counsellors, create a policy (e.g. LEAST_WORKLOAD, auto-assign on), add a rule mapping the new programme to that pool.
+5. **Auto-assign the lead** — `/students`, open the new enquiry -> Auto-assign. Verify the chosen counsellor, and that the history shows algorithm, rule and candidate list. Reassign manually and confirm a second MANUAL audit row.
+6. **Counsellor portal** — sign in as a counsellor account -> `/my-leads` shows only their leads -> log a call -> advance stage to CONTACTED.
+7. **Seminar builder** — as admin, `/seminars` -> New Event: type WOC, link the programme, target stage CONTACTED -> add two sessions with venues and capacities -> allocation strategy LEAST_FILLED -> publish.
+8. **Seminar registration** — from the counsellor portal (or the student drawer), book the student into a session. Confirm booking ref + QR, seat count increments, stage moves to WOC_BOOKED, and an email row appears in `/emails`.
+9. **Auto allocation** — on the event page, run Auto-allocate: all eligible CONTACTED students of that programme get distributed by the strategy, capacity respected, overflow waitlisted. Verify session seat counts and the bookings list.
+10. **Dashboard check** — `/dashboard` funnel and recent activity reflect the new programme, assignments and bookings.
