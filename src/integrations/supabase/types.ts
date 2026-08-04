@@ -875,9 +875,10 @@ export type Database = {
         Row: {
           booked_at: string
           booking_ref: string
+          event_id: string | null
           id: string
           qr_payload: string
-          seminar_id: string
+          seminar_id: string | null
           session_id: string | null
           status: Database["public"]["Enums"]["booking_status"]
           student_id: string
@@ -885,9 +886,10 @@ export type Database = {
         Insert: {
           booked_at?: string
           booking_ref: string
+          event_id?: string | null
           id?: string
           qr_payload: string
-          seminar_id: string
+          seminar_id?: string | null
           session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id: string
@@ -895,14 +897,22 @@ export type Database = {
         Update: {
           booked_at?: string
           booking_ref?: string
+          event_id?: string | null
           id?: string
           qr_payload?: string
-          seminar_id?: string
+          seminar_id?: string | null
           session_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"]
           student_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "seminar_bookings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "seminar_bookings_seminar_id_fkey"
             columns: ["seminar_id"]
