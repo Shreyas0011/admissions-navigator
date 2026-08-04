@@ -13,7 +13,7 @@ import {
   publishEventFn,
 } from "@/domains/events/events.functions";
 
-export const Route = createFileRoute("/_authenticated/seminars")({
+export const Route = createFileRoute("/_authenticated/seminars/")({
   head: () => ({
     meta: [
       { title: "Seminar Builder — Admissions OS" },
