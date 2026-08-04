@@ -44,3 +44,14 @@ export const ruleInputSchema = z.object({
 export type PolicyInput = z.infer<typeof policyInputSchema>;
 export type PoolInput = z.infer<typeof poolInputSchema>;
 export type RuleInput = z.infer<typeof ruleInputSchema>;
+
+export const policyCreateSchema = z.object({
+  name: z.string().trim().min(2, "Policy name is required").max(120),
+  policyType: policyTypeSchema,
+  autoAssign: z.boolean().default(true),
+  fallbackAlgorithm: algorithmSchema,
+  defaultPoolId: z.string().uuid().nullable().default(null),
+  priority: z.coerce.number().int().min(1).max(999).default(100),
+});
+
+export type PolicyCreateInput = z.infer<typeof policyCreateSchema>;
