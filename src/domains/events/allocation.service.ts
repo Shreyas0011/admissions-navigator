@@ -26,7 +26,9 @@ export function pickSession(
 async function eligibleStudents(programmeId: string | null, targetStage: string | null) {
   let query = supabaseAdmin.from("students").select("id, stage, programme_id");
   if (programmeId) query = query.eq("programme_id", programmeId);
-  if (targetStage) query = query.eq("stage", targetStage);
+  if (targetStage) {
+    query = query.eq("stage", targetStage as AdmissionStage);
+  }
   const { data, error } = await query;
   if (error) throw new Error(error.message);
   return data ?? [];
