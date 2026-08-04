@@ -1033,6 +1033,7 @@ export type Database = {
           stage: Database["public"]["Enums"]["admission_stage"]
           student_code: string
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           counsellor_id?: string | null
@@ -1052,6 +1053,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code: string
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           counsellor_id?: string | null
@@ -1071,6 +1073,7 @@ export type Database = {
           stage?: Database["public"]["Enums"]["admission_stage"]
           student_code?: string
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1158,6 +1161,7 @@ export type Database = {
     }
     Functions: {
       current_counsellor_id: { Args: never; Returns: string }
+      current_student_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
