@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { GraduationCap, ShieldCheck, CalendarCheck, Ticket } from "lucide-react";
 
-import { EnquiryForm } from "@/components/students/EnquiryForm";
+import { ApplicationForm } from "@/components/students/ApplicationForm";
 import { APP_NAME } from "@/config/constants";
 
 export const Route = createFileRoute("/")({
@@ -46,7 +46,7 @@ function EnquiryPortal() {
             to="/auth"
             className="rounded-xl border border-sidebar-border px-4 py-2 text-sm font-medium text-sidebar-accent-foreground transition-colors hover:bg-sidebar-accent"
           >
-            Staff sign in
+            Sign in
           </Link>
         </div>
       </header>
@@ -78,11 +78,11 @@ function EnquiryPortal() {
         </div>
 
         <section className="surface-card rounded-3xl p-8">
-          <h2 className="text-xl font-semibold text-foreground">Enquiry form</h2>
+          <h2 className="text-xl font-semibold text-foreground">Application form</h2>
           <p className="mt-1 mb-6 text-sm text-muted-foreground">
-            All fields are required unless marked otherwise.
+            Your email and password become your student portal login.
           </p>
-          <EnquiryForm defaultSource="WEBSITE" />
+          <ApplicationForm />
         </section>
       </main>
     </div>
