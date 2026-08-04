@@ -1,59 +1,102 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Wand2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
+import { StatCard } from "@/components/shared/StatCard";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Progress } from "@/components/ui/progress";
-import { listCounsellors } from "@/domains/counsellors/counsellors.functions";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PolicyPanel } from "@/components/assignment/PolicyPanel";
+import { PoolPanel } from "@/components/assignment/PoolPanel";
+import { RulePanel } from "@/components/assignment/RulePanel";
+import { AssignmentLog } from "@/components/assignment/AssignmentLog";
+import { getEngineConsoleFn, runEngineQueueFn } from "@/domains/assignment/assignment.functions";
 
 export const Route = createFileRoute("/_authenticated/lead-assignment")({
   head: () => ({
     meta: [
-      { title: "Lead Assignment — Admissions OS" },
-      { name: "description", content: "Counsellor workload and lead distribution across the team." },
+      { title: "Assignment Engine — Admissions OS" },
+      {
+        name: "description",
+        content: "Configure policies, counsellor pools and programme rules that distribute every lead.",
+      },
     ],
   }),
-  component: LeadAssignmentPage,
+  component: AssignmentEnginePage,
 });
 
-function LeadAssignmentPage() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["counsellors"],
-    queryFn: () => listCounsellors(),
+function AssignmentEnginePage() {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["engine-console"],
+    queryFn: () => getEngineConsoleFn(),
   });
+
+  const runQueue = useMutation({
+    mutationFn: () => runEngineQueueFn(),
+    onSuccess: (result) => {
+      toast.success(`Assigned ${result.assigned} of ${result.considered} unassigned leads`);
+      queryClient.invalidateQueries({ queryKey: ["engine-console"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  if (error) return <p className="text-sm text-destructive">{(error as Error).message}</p>;
 
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="Team"
+        eyebrow="Engine"
         title="Lead Assignment"
-        description="Current active load per counsellor. Assign leads from a student's profile in the registry."
+        description="Rules resolve programme → pool → algorithm. Every decision is written to an immutable audit trail."
+        actions={
+          <>
+            <StatCard label="Unassigned" value={data?.queueSize ?? 0} accent />
+            <StatCard label="Pools" value={data?.pools.length ?? 0} />
+            <Button
+              className="h-auto rounded-2xl px-6"
+              disabled={runQueue.isPending}
+              onClick={() => runQueue.mutate()}
+            >
+              <Wand2 className="size-4" /> Run engine on queue
+            </Button>
+          </>
+        }
       />
 
-      {isLoading ? (
-        <Skeleton className="h-64 rounded-2xl" />
+      {isLoading || !data ? (
+        <Skeleton className="h-96 rounded-2xl" />
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {(data ?? []).map((c) => {
-            const load = Math.round((c.active_leads / Math.max(c.max_active_leads, 1)) * 100);
-            return (
-              <article key={c.id} className="surface-card rounded-2xl p-6">
-                <h2 className="text-lg font-semibold text-foreground">{c.full_name}</h2>
-                <p className="text-sm text-muted-foreground">{c.email}</p>
-                <p className="mt-4 text-3xl font-bold tabular-nums text-foreground">
-                  {c.active_leads}
-                  <span className="ml-1 text-sm font-normal text-muted-foreground">
-                    / {c.max_active_leads} active leads
-                  </span>
-                </p>
-                <Progress value={Math.min(load, 100)} className="mt-4 h-2" />
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {c.is_active ? `${load}% of capacity` : "Inactive"}
-                </p>
-              </article>
-            );
-          })}
-        </div>
+        <Tabs defaultValue="policies">
+          <TabsList>
+            <TabsTrigger value="policies">Policies</TabsTrigger>
+            <TabsTrigger value="pools">Pools</TabsTrigger>
+            <TabsTrigger value="rules">Rules</TabsTrigger>
+            <TabsTrigger value="log">Audit log</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="policies" className="mt-6">
+            <PolicyPanel policies={data.policies} pools={data.pools} />
+          </TabsContent>
+          <TabsContent value="pools" className="mt-6">
+            <PoolPanel pools={data.pools} counsellors={data.counsellors} />
+          </TabsContent>
+          <TabsContent value="rules" className="mt-6">
+            <RulePanel
+              rules={data.rules}
+              policies={data.policies}
+              pools={data.pools}
+              programmes={data.programmes}
+            />
+          </TabsContent>
+          <TabsContent value="log" className="mt-6">
+            <AssignmentLog rows={data.log} />
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   );
