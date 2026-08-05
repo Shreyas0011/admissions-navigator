@@ -165,9 +165,9 @@ function AuthPage() {
           </Button>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Prospective student?{" "}
+            New student? Your account is created with your application.{" "}
             <Link to="/" className="font-medium text-primary hover:underline">
-              Submit an enquiry
+              Apply & create account
             </Link>
           </p>
         </div>
