@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROLE_LABELS, STAGES } from "@/config/constants";
 import { getCurrentActor } from "@/domains/users/users.functions";
+import { CounsellorAccounts } from "@/components/counsellors/CounsellorAccounts";
 
 export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({
@@ -56,6 +57,8 @@ function SettingsPage() {
           </div>
         )}
       </section>
+
+      {actor?.isAdmin && <CounsellorAccounts />}
 
       <section className="surface-card rounded-2xl p-6">
         <h2 className="text-lg font-semibold text-foreground">Admission pipeline</h2>

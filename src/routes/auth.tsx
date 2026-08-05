@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { APP_NAME } from "@/config/constants";
+import { getCurrentActor } from "@/domains/users/users.functions";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
@@ -46,6 +47,17 @@ function safePath(value: string | undefined) {
   }
 }
 
+async function landingPath(fallback: string) {
+  try {
+    const actor = await getCurrentActor();
+    if (actor.roles.length === 0) return "/portal";
+    if (!actor.isAdmin && actor.roles.includes("counsellor")) return "/my-leads";
+  } catch {
+    return "/portal";
+  }
+  return fallback;
+}
+
 function AuthPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
@@ -64,7 +76,8 @@ function AuthPage() {
       return;
     }
     toast.success("Welcome back");
-    navigate({ to: safePath(search.redirect), replace: true });
+    const target = search.redirect ? safePath(search.redirect) : await landingPath("/dashboard");
+    navigate({ to: target, replace: true });
   }
 
   async function handleGoogle() {
@@ -77,7 +90,8 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    navigate({ to: safePath(search.redirect), replace: true });
+    const target = search.redirect ? safePath(search.redirect) : await landingPath("/dashboard");
+    navigate({ to: target, replace: true });
   }
 
   return (
@@ -151,9 +165,9 @@ function AuthPage() {
           </Button>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Prospective student?{" "}
+            New student? Your account is created with your application.{" "}
             <Link to="/" className="font-medium text-primary hover:underline">
-              Submit an enquiry
+              Apply & create account
             </Link>
           </p>
         </div>
