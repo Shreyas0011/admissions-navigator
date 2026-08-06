@@ -48,17 +48,21 @@ function MyLeadsPage() {
   const [callFor, setCallFor] = useState<string | null>(null);
   const [outcome, setOutcome] = useState<string>("CONNECTED");
   const [notes, setNotes] = useState("");
+  const [calledAt, setCalledAt] = useState(() => localNow());
 
   const { data, isLoading } = useQuery({ queryKey: ["my-leads"], queryFn: () => listMyLeadsFn() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["my-leads"] });
 
   const log = useMutation({
     mutationFn: () =>
-      logStudentCall({ data: { studentId: callFor!, outcome: outcome as never, notes } }),
+      logStudentCall({
+        data: { studentId: callFor!, outcome: outcome as never, notes, calledAt },
+      }),
     onSuccess: () => {
       toast.success("Call logged");
       setCallFor(null);
       setNotes("");
+      setCalledAt(localNow());
       refresh();
     },
     onError: (e: Error) => toast.error(e.message),
