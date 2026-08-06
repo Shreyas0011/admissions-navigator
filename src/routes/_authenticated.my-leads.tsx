@@ -133,10 +133,20 @@ function MyLeadsPage() {
               </div>
 
               {lead.call_logs.length > 0 && (
-                <p className="mt-4 text-xs text-muted-foreground">
-                  Last call: {lead.call_logs[0]!.outcome.replace(/_/g, " ").toLowerCase()} ·{" "}
-                  {new Date(lead.call_logs[0]!.created_at).toLocaleString()}
-                </p>
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Call history ({lead.call_logs.length}) · saved calls cannot be edited
+                  </p>
+                  {lead.call_logs.slice(0, 4).map((call) => (
+                    <div key={call.id} className="rounded-xl bg-surface-low px-3 py-2 text-xs">
+                      <p className="font-medium text-foreground">
+                        {call.outcome.replace(/_/g, " ").toLowerCase()} ·{" "}
+                        {new Date(call.called_at).toLocaleString()}
+                      </p>
+                      {call.notes && <p className="mt-1 text-muted-foreground">{call.notes}</p>}
+                    </div>
+                  ))}
+                </div>
               )}
             </article>
           ))}
@@ -148,6 +158,15 @@ function MyLeadsPage() {
           <DialogHeader>
             <DialogTitle>Log a call</DialogTitle>
           </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="call-at">Date & time of call</Label>
+            <Input
+              id="call-at"
+              type="datetime-local"
+              value={calledAt}
+              onChange={(e) => setCalledAt(e.target.value)}
+            />
+          </div>
           <Select value={outcome} onValueChange={setOutcome}>
             <SelectTrigger>
               <SelectValue />
@@ -166,6 +185,9 @@ function MyLeadsPage() {
             onChange={(e) => setNotes(e.target.value)}
             placeholder="What was discussed?"
           />
+          <p className="text-xs text-muted-foreground">
+            Call logs are permanent — check the details before saving.
+          </p>
           <Button disabled={log.isPending} onClick={() => log.mutate()}>
             Save call log
           </Button>
@@ -173,4 +195,11 @@ function MyLeadsPage() {
       </Dialog>
     </div>
   );
+}
+
+/** `datetime-local` value for right now, in the counsellor's own timezone. */
+function localNow() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  return now.toISOString().slice(0, 16);
 }
