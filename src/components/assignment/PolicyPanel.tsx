@@ -13,7 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createPolicyFn, togglePolicyFn, updatePolicyFn } from "@/domains/assignment/assignment.functions";
+import {
+  createPolicyFn,
+  publishPolicyFn,
+  togglePolicyFn,
+  updatePolicyFn,
+} from "@/domains/assignment/assignment.functions";
 import type { PolicyInput } from "@/domains/assignment/schema";
 import { ALGORITHMS, POLICY_TYPES, type EnginePolicy, type EnginePool } from "./types";
 
@@ -63,6 +68,19 @@ export function PolicyPanel({
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const publish = useMutation({
+    mutationFn: (input: { id: string; published: boolean }) => publishPolicyFn({ data: input }),
+    onSuccess: (result) => {
+      toast.success(
+        result.published
+          ? `Policy published — ${result.assigned} waiting application(s) auto-assigned`
+          : "Policy unpublished",
+      );
+      invalidate();
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <div className="space-y-6">
       <div className="surface-card rounded-2xl p-6">
@@ -108,19 +126,39 @@ export function PolicyPanel({
         <div key={policy.id} className="surface-card rounded-2xl p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h3 className="text-base font-semibold text-foreground">{policy.name}</h3>
+              <h3 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                {policy.name}
+                {policy.is_published && (
+                  <span className="rounded-full bg-success-soft px-2.5 py-0.5 text-xs font-semibold text-success">
+                    Live
+                  </span>
+                )}
+              </h3>
               <p className="text-xs text-muted-foreground">
                 Priority {policy.priority} · default pool {policy.counsellor_pools?.name ?? "none"}
               </p>
             </div>
-            <label className="flex items-center gap-2 text-sm">
-              Enabled
-              <Switch
-                checked={policy.enabled}
-                onCheckedChange={(enabled) => toggle.mutate({ id: policy.id, enabled })}
-              />
-            </label>
+            <div className="flex items-center gap-4">
+              <Button
+                size="sm"
+                variant={policy.is_published ? "outline" : "default"}
+                disabled={publish.isPending}
+                onClick={() =>
+                  publish.mutate({ id: policy.id, published: !policy.is_published })
+                }
+              >
+                {policy.is_published ? "Unpublish" : "Publish"}
+              </Button>
+              <label className="flex items-center gap-2 text-sm">
+                Enabled
+                <Switch
+                  checked={policy.enabled}
+                  onCheckedChange={(enabled) => toggle.mutate({ id: policy.id, enabled })}
+                />
+              </label>
+            </div>
           </div>
+
 
           <div className="mt-5 grid gap-4 sm:grid-cols-4">
             <SelectField

@@ -5,10 +5,22 @@ import type { AssignmentAlgorithm, Candidate } from "./algorithms";
 export type AssignmentAuditRow = Database["public"]["Tables"]["assignments"]["Insert"];
 import type { PolicyInput, PoolInput, RuleInput } from "./schema";
 
+/** The published policy is the live one; fall back to the highest-priority enabled policy. */
 export async function selectActivePolicy() {
+  const columns =
+    "id, name, policy_type, enabled, is_published, auto_assign, fallback_algorithm, default_pool_id, priority";
+
+  const { data: published, error: publishedError } = await supabaseAdmin
+    .from("assignment_policies")
+    .select(columns)
+    .eq("is_published", true)
+    .maybeSingle();
+  if (publishedError) throw new Error(publishedError.message);
+  if (published) return published;
+
   const { data, error } = await supabaseAdmin
     .from("assignment_policies")
-    .select("id, name, policy_type, enabled, auto_assign, fallback_algorithm, default_pool_id, priority")
+    .select(columns)
     .eq("enabled", true)
     .order("priority")
     .limit(1)

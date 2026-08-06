@@ -2,18 +2,18 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { CounsellorAccountInput } from "./schema";
 
 /**
- * Module 3b — an admin provisions a counsellor login.
+ * Module 3b — an admin provisions a counsellor login with email + password only.
  *
- * Counsellors never self-register: the admin creates the auth user (pre
- * confirmed), grants the `counsellor` role and links the directory row so
- * `current_counsellor_id()` resolves for that session.
+ * The counsellor completes their own profile after the forced first-login
+ * password reset (`must_reset_password`).
  */
 export async function createCounsellorAccount(input: CounsellorAccountInput) {
   const email = input.email.trim().toLowerCase();
+  const placeholderName = email.split("@")[0] ?? "New counsellor";
 
   const { data: existingCounsellor } = await supabaseAdmin
     .from("counsellors")
-    .select("id, user_id")
+    .select("id, user_id, full_name")
     .eq("email", email)
     .maybeSingle();
 
@@ -25,7 +25,7 @@ export async function createCounsellorAccount(input: CounsellorAccountInput) {
     email,
     password: input.password,
     email_confirm: true,
-    user_metadata: { full_name: input.fullName },
+    user_metadata: { full_name: placeholderName },
   });
   if (authError || !created.user) {
     throw new Error(authError?.message ?? "Could not create the counsellor login");
@@ -44,13 +44,7 @@ export async function createCounsellorAccount(input: CounsellorAccountInput) {
   if (existingCounsellor) {
     const { error } = await supabaseAdmin
       .from("counsellors")
-      .update({
-        user_id: userId,
-        full_name: input.fullName,
-        phone: input.phone || null,
-        max_active_leads: input.maxActiveLeads,
-        is_active: true,
-      })
+      .update({ user_id: userId, is_active: true, must_reset_password: true })
       .eq("id", existingCounsellor.id);
     if (error) throw new Error(error.message);
     return { counsellorId: existingCounsellor.id, email };
@@ -60,11 +54,10 @@ export async function createCounsellorAccount(input: CounsellorAccountInput) {
     .from("counsellors")
     .insert({
       user_id: userId,
-      full_name: input.fullName,
+      full_name: placeholderName,
       email,
-      phone: input.phone || null,
-      max_active_leads: input.maxActiveLeads,
       is_active: true,
+      must_reset_password: true,
     })
     .select("id")
     .single();

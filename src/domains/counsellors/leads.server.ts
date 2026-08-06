@@ -19,14 +19,19 @@ export async function listMyLeads(userId: string) {
   const { data, error } = await supabaseAdmin
     .from("students")
     .select(
-      "id, student_code, full_name, email, phone, stage, created_at, programmes(name), call_logs(id, outcome, notes, created_at)",
+      "id, student_code, full_name, email, phone, stage, created_at, programmes(name), call_logs(id, outcome, notes, called_at, created_at)",
     )
     .eq("counsellor_id", counsellor.id)
     .order("created_at", { ascending: false })
     .limit(200);
   if (error) throw new Error(error.message);
 
-  return { counsellor, leads: (data ?? []) as unknown as MyLead[] };
+  const leads = (data ?? []) as unknown as MyLead[];
+  for (const lead of leads) {
+    lead.call_logs.sort((a, b) => b.called_at.localeCompare(a.called_at));
+  }
+
+  return { counsellor, leads };
 }
 
 export type MyLead = {
@@ -38,9 +43,16 @@ export type MyLead = {
   stage: string;
   created_at: string;
   programmes: { name: string } | null;
-  call_logs: { id: string; outcome: string; notes: string | null; created_at: string }[];
+  call_logs: {
+    id: string;
+    outcome: string;
+    notes: string | null;
+    called_at: string;
+    created_at: string;
+  }[];
 };
 
+/** Call logs are append-only: saved once, never edited or deleted. */
 export async function logCall(userId: string, input: CallLogInput) {
   const counsellor = await currentCounsellorId(userId);
   const { error } = await supabaseAdmin.from("call_logs").insert({
@@ -48,6 +60,7 @@ export async function logCall(userId: string, input: CallLogInput) {
     counsellor_id: counsellor?.id ?? null,
     outcome: input.outcome,
     notes: input.notes ?? null,
+    called_at: input.calledAt ? new Date(input.calledAt).toISOString() : new Date().toISOString(),
   });
   if (error) throw new Error(error.message);
   return { ok: true };

@@ -52,6 +52,7 @@ export type Database = {
           enabled: boolean
           fallback_algorithm: Database["public"]["Enums"]["assignment_algorithm"]
           id: string
+          is_published: boolean
           name: string
           policy_type: Database["public"]["Enums"]["assignment_policy_type"]
           priority: number
@@ -64,6 +65,7 @@ export type Database = {
           enabled?: boolean
           fallback_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
           id?: string
+          is_published?: boolean
           name: string
           policy_type?: Database["public"]["Enums"]["assignment_policy_type"]
           priority?: number
@@ -76,6 +78,7 @@ export type Database = {
           enabled?: boolean
           fallback_algorithm?: Database["public"]["Enums"]["assignment_algorithm"]
           id?: string
+          is_published?: boolean
           name?: string
           policy_type?: Database["public"]["Enums"]["assignment_policy_type"]
           priority?: number
@@ -242,30 +245,39 @@ export type Database = {
       }
       attendance: {
         Row: {
-          booking_id: string
+          booking_id: string | null
           id: string
+          is_walk_in: boolean
           programme_id: string | null
           scanned_at: string
           scanned_by: string | null
-          seminar_id: string
+          seminar_id: string | null
+          session_id: string | null
+          staff_name: string | null
           student_id: string
         }
         Insert: {
-          booking_id: string
+          booking_id?: string | null
           id?: string
+          is_walk_in?: boolean
           programme_id?: string | null
           scanned_at?: string
           scanned_by?: string | null
-          seminar_id: string
+          seminar_id?: string | null
+          session_id?: string | null
+          staff_name?: string | null
           student_id: string
         }
         Update: {
-          booking_id?: string
+          booking_id?: string | null
           id?: string
+          is_walk_in?: boolean
           programme_id?: string | null
           scanned_at?: string
           scanned_by?: string | null
-          seminar_id?: string
+          seminar_id?: string | null
+          session_id?: string | null
+          staff_name?: string | null
           student_id?: string
         }
         Relationships: [
@@ -291,6 +303,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "attendance_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "attendance_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
@@ -301,6 +320,7 @@ export type Database = {
       }
       call_logs: {
         Row: {
+          called_at: string
           counsellor_id: string | null
           created_at: string
           id: string
@@ -310,6 +330,7 @@ export type Database = {
           student_id: string
         }
         Insert: {
+          called_at?: string
           counsellor_id?: string | null
           created_at?: string
           id?: string
@@ -319,6 +340,7 @@ export type Database = {
           student_id: string
         }
         Update: {
+          called_at?: string
           counsellor_id?: string | null
           created_at?: string
           id?: string
@@ -418,6 +440,7 @@ export type Database = {
           id: string
           is_active: boolean
           max_active_leads: number
+          must_reset_password: boolean
           phone: string | null
           updated_at: string
           user_id: string | null
@@ -429,6 +452,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_active_leads?: number
+          must_reset_password?: boolean
           phone?: string | null
           updated_at?: string
           user_id?: string | null
@@ -440,6 +464,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           max_active_leads?: number
+          must_reset_password?: boolean
           phone?: string | null
           updated_at?: string
           user_id?: string | null
@@ -502,6 +527,7 @@ export type Database = {
           created_at: string
           ends_at: string
           event_id: string
+          ground_password: string | null
           id: string
           is_open: boolean
           reserved_seats: number
@@ -516,6 +542,7 @@ export type Database = {
           created_at?: string
           ends_at: string
           event_id: string
+          ground_password?: string | null
           id?: string
           is_open?: boolean
           reserved_seats?: number
@@ -530,6 +557,7 @@ export type Database = {
           created_at?: string
           ends_at?: string
           event_id?: string
+          ground_password?: string | null
           id?: string
           is_open?: boolean
           reserved_seats?: number

@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -56,7 +56,8 @@ export function ApplicationForm() {
         email: values.email.trim().toLowerCase(),
         password: values.password,
       });
-      if (error) throw new Error(`${result.studentCode} created, but sign-in failed: ${error.message}`);
+      if (error)
+        throw new Error(`${result.studentCode} created, but sign-in failed: ${error.message}`);
       return result;
     },
     onSuccess: (result) => {
@@ -68,6 +69,7 @@ export function ApplicationForm() {
   });
 
   const errors = form.formState.errors;
+  const errorCount = Object.keys(errors).length;
 
   if (code) {
     return (
@@ -86,8 +88,20 @@ export function ApplicationForm() {
     <form
       onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
       className="grid gap-5 sm:grid-cols-2"
+      noValidate
     >
-      <Field label="Programme you are applying to" error={errors.programmeId?.message} full>
+      {(errorCount > 0 || mutation.isError) && (
+        <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive sm:col-span-2">
+          <AlertCircle className="mt-0.5 size-4 shrink-0" />
+          <span>
+            {mutation.isError
+              ? (mutation.error as Error).message
+              : `Please fix ${errorCount} field${errorCount > 1 ? "s" : ""} below before submitting.`}
+          </span>
+        </div>
+      )}
+
+      <Field id="programmeId" label="Programme you are applying to" error={errors.programmeId?.message} full>
         <Select
           onValueChange={(v) => {
             form.setValue("programmeId", v, { shouldValidate: true });
@@ -95,7 +109,7 @@ export function ApplicationForm() {
             form.setValue("course", p ? `${p.code} — ${p.name}` : "", { shouldValidate: true });
           }}
         >
-          <SelectTrigger>
+          <SelectTrigger id="programmeId">
             <SelectValue placeholder="Select a programme" />
           </SelectTrigger>
           <SelectContent>
@@ -113,39 +127,44 @@ export function ApplicationForm() {
         )}
       </Field>
 
-      <Field label="Full name" error={errors.fullName?.message}>
-        <Input {...form.register("fullName")} placeholder="Aarav Sharma" />
+      <Field id="fullName" label="Full name" error={errors.fullName?.message}>
+        <Input id="fullName" {...form.register("fullName")} placeholder="Aarav Sharma" />
       </Field>
-      <Field label="Date of birth" error={errors.dateOfBirth?.message}>
-        <Input type="date" {...form.register("dateOfBirth")} />
+      <Field id="dateOfBirth" label="Date of birth" error={errors.dateOfBirth?.message}>
+        <Input id="dateOfBirth" type="date" {...form.register("dateOfBirth")} />
       </Field>
-      <Field label="Email (your login)" error={errors.email?.message}>
-        <Input type="email" {...form.register("email")} placeholder="student@email.com" />
+      <Field id="email" label="Email (your login)" error={errors.email?.message}>
+        <Input id="email" type="email" {...form.register("email")} placeholder="student@email.com" />
       </Field>
-      <Field label="Phone" error={errors.phone?.message}>
-        <Input {...form.register("phone")} placeholder="+91 98765 43210" />
+      <Field id="phone" label="Phone" error={errors.phone?.message}>
+        <Input id="phone" {...form.register("phone")} placeholder="+91 98765 43210" />
       </Field>
-      <Field label="Password" error={errors.password?.message}>
-        <Input type="password" autoComplete="new-password" {...form.register("password")} />
+      <Field id="password" label="Password" error={errors.password?.message}>
+        <Input id="password" type="password" autoComplete="new-password" {...form.register("password")} />
       </Field>
-      <Field label="Confirm password" error={errors.confirmPassword?.message}>
-        <Input type="password" autoComplete="new-password" {...form.register("confirmPassword")} />
+      <Field id="confirmPassword" label="Confirm password" error={errors.confirmPassword?.message}>
+        <Input
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          {...form.register("confirmPassword")}
+        />
       </Field>
-      <Field label="Parent / guardian name" error={errors.parentName?.message}>
-        <Input {...form.register("parentName")} placeholder="Priya Sharma" />
+      <Field id="parentName" label="Parent / guardian name" error={errors.parentName?.message}>
+        <Input id="parentName" {...form.register("parentName")} placeholder="Priya Sharma" />
       </Field>
-      <Field label="Parent / guardian phone" error={errors.parentPhone?.message}>
-        <Input {...form.register("parentPhone")} placeholder="+91 90000 00000" />
+      <Field id="parentPhone" label="Parent / guardian phone" error={errors.parentPhone?.message}>
+        <Input id="parentPhone" {...form.register("parentPhone")} placeholder="+91 90000 00000" />
       </Field>
-      <Field label="Current school" error={errors.school?.message}>
-        <Input {...form.register("school")} placeholder="Delhi Public School" />
+      <Field id="school" label="Current school" error={errors.school?.message}>
+        <Input id="school" {...form.register("school")} placeholder="Delhi Public School" />
       </Field>
-      <Field label="How did you hear about us?" error={errors.leadSource?.message}>
+      <Field id="leadSource" label="How did you hear about us?" error={errors.leadSource?.message}>
         <Select
           defaultValue="WEBSITE"
           onValueChange={(v) => form.setValue("leadSource", v as ApplicationInput["leadSource"])}
         >
-          <SelectTrigger>
+          <SelectTrigger id="leadSource">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -161,19 +180,27 @@ export function ApplicationForm() {
       <div className="sm:col-span-2">
         <Button type="submit" className="h-12 w-full text-base" disabled={mutation.isPending}>
           {mutation.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
-          Submit application & create account
+          Submit application &amp; create account
         </Button>
+        <p className="mt-3 text-center text-sm text-muted-foreground">
+          Already applied?{" "}
+          <Link to="/student-login" className="font-medium text-primary hover:underline">
+            Sign in to your student portal
+          </Link>
+        </p>
       </div>
     </form>
   );
 }
 
 function Field({
+  id,
   label,
   error,
   children,
   full,
 }: {
+  id: string;
   label: string;
   error?: string;
   children: React.ReactNode;
@@ -181,7 +208,9 @@ function Field({
 }) {
   return (
     <div className={full ? "sm:col-span-2" : undefined}>
-      <Label className="mb-2 block">{label}</Label>
+      <Label htmlFor={id} className="mb-2 block">
+        {label}
+      </Label>
       {children}
       {error && <p className="mt-1.5 text-xs text-destructive">{error}</p>}
     </div>
