@@ -72,5 +72,19 @@ export async function createApplicationAccount(input: ApplicationInput) {
     payload: { student_code: data.student_code, full_name: data.full_name },
   });
 
-  return { studentCode: data.student_code, studentId: data.id };
+  // The Assignment Engine runs immediately against the published policy —
+  // no admin action is needed for a new application to reach a counsellor.
+  let counsellorName: string | null = null;
+  try {
+    const { resolveAssignment } = await import("@/domains/assignment/assignment.service");
+    const decision = await resolveAssignment({
+      studentId: data.id,
+      actorLabel: "Assignment Engine (application)",
+    });
+    counsellorName = decision.counsellorName;
+  } catch {
+    // A misconfigured engine must never block an application.
+  }
+
+  return { studentCode: data.student_code, studentId: data.id, counsellorName };
 }

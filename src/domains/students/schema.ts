@@ -83,6 +83,8 @@ export const callLogSchema = z.object({
     "CALLBACK_REQUESTED",
   ]),
   notes: z.string().trim().max(1000).optional(),
+  /** Local datetime string from the counsellor's form; defaults to now. */
+  calledAt: z.string().trim().max(40).optional(),
 });
 
 export type CallLogInput = z.infer<typeof callLogSchema>;

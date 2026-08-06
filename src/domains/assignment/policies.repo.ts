@@ -4,7 +4,7 @@ export async function selectPolicies() {
   const { data, error } = await supabaseAdmin
     .from("assignment_policies")
     .select(
-      "id, name, policy_type, enabled, auto_assign, fallback_algorithm, default_pool_id, priority, counsellor_pools(name)",
+      "id, name, policy_type, enabled, is_published, auto_assign, fallback_algorithm, default_pool_id, priority, counsellor_pools(name)",
     )
     .order("priority");
   if (error) throw new Error(error.message);
@@ -13,6 +13,7 @@ export async function selectPolicies() {
     name: string;
     policy_type: string;
     enabled: boolean;
+    is_published: boolean;
     auto_assign: boolean;
     fallback_algorithm: string;
     default_pool_id: string | null;
@@ -50,6 +51,29 @@ export async function setPolicyEnabled(id: string, enabled: boolean) {
   const { error } = await supabaseAdmin
     .from("assignment_policies")
     .update({ enabled })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+/** Exactly one policy may be published: unpublish the rest, then publish this one. */
+export async function publishPolicy(id: string) {
+  const { error: clearError } = await supabaseAdmin
+    .from("assignment_policies")
+    .update({ is_published: false })
+    .neq("id", id);
+  if (clearError) throw new Error(clearError.message);
+
+  const { error } = await supabaseAdmin
+    .from("assignment_policies")
+    .update({ is_published: true, enabled: true })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+export async function unpublishPolicy(id: string) {
+  const { error } = await supabaseAdmin
+    .from("assignment_policies")
+    .update({ is_published: false })
     .eq("id", id);
   if (error) throw new Error(error.message);
 }

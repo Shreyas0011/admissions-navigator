@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PortalRouteImport } from './routes/portal'
+import { Route as StudentLoginRouteImport } from './routes/student-login'
+import { Route as AuthenticatedCounsellorsRouteImport } from './routes/_authenticated.counsellors'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedEmailsRouteImport } from './routes/_authenticated.emails'
 import { Route as AuthenticatedExamsRouteImport } from './routes/_authenticated.exams'
@@ -50,6 +52,17 @@ const PortalRoute = PortalRouteImport.update({
   path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentLoginRoute = StudentLoginRouteImport.update({
+  id: '/student-login',
+  path: '/student-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCounsellorsRoute =
+  AuthenticatedCounsellorsRouteImport.update({
+    id: '/counsellors',
+    path: '/counsellors',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -145,6 +158,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
+  '/student-login': typeof StudentLoginRoute
+  '/counsellors': typeof AuthenticatedCounsellorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
@@ -166,6 +181,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/student-login': typeof StudentLoginRoute
+  '/counsellors': typeof AuthenticatedCounsellorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/emails': typeof AuthenticatedEmailsRoute
   '/exams': typeof AuthenticatedExamsRoute
@@ -190,6 +207,8 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
+  '/student-login': typeof StudentLoginRoute
+  '/_authenticated/counsellors': typeof AuthenticatedCounsellorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/emails': typeof AuthenticatedEmailsRoute
   '/_authenticated/exams': typeof AuthenticatedExamsRoute
@@ -214,6 +233,8 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/portal'
+    | '/student-login'
+    | '/counsellors'
     | '/dashboard'
     | '/emails'
     | '/exams'
@@ -235,6 +256,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/student-login'
+    | '/counsellors'
     | '/dashboard'
     | '/emails'
     | '/exams'
@@ -258,6 +281,8 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/portal'
+    | '/student-login'
+    | '/_authenticated/counsellors'
     | '/_authenticated/dashboard'
     | '/_authenticated/emails'
     | '/_authenticated/exams'
@@ -282,6 +307,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
+  StudentLoginRoute: typeof StudentLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -313,6 +339,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal'
       preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/student-login': {
+      id: '/student-login'
+      path: '/student-login'
+      fullPath: '/student-login'
+      preLoaderRoute: typeof StudentLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/counsellors': {
+      id: '/_authenticated/counsellors'
+      path: '/counsellors'
+      fullPath: '/counsellors'
+      preLoaderRoute: typeof AuthenticatedCounsellorsRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -437,6 +477,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCounsellorsRoute: typeof AuthenticatedCounsellorsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEmailsRoute: typeof AuthenticatedEmailsRoute
   AuthenticatedExamsRoute: typeof AuthenticatedExamsRoute
@@ -452,6 +493,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCounsellorsRoute: AuthenticatedCounsellorsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEmailsRoute: AuthenticatedEmailsRoute,
   AuthenticatedExamsRoute: AuthenticatedExamsRoute,
@@ -495,17 +537,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
+  StudentLoginRoute: StudentLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

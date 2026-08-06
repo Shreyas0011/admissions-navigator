@@ -2,6 +2,7 @@ import {
   LayoutGrid,
   BookOpen,
   PhoneCall,
+  Headset,
   Users,
   UserPlus,
   CalendarDays,
@@ -28,6 +29,7 @@ export type NavItem = {
     | "/programmes"
     | "/students"
     | "/my-leads"
+    | "/counsellors"
     | "/lead-assignment"
     | "/seminars"
     | "/exams"
@@ -45,7 +47,8 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutGrid, roles: ALL_STAFF },
   { title: "Programmes", url: "/programmes", icon: BookOpen, roles: ADMINS },
   { title: "Students", url: "/students", icon: Users, roles: ALL_STAFF },
-  { title: "My Leads", url: "/my-leads", icon: PhoneCall, roles: ["counsellor", "super_admin", "admissions_admin"] },
+  { title: "My Leads", url: "/my-leads", icon: PhoneCall, roles: ["counsellor"] },
+  { title: "Counsellors", url: "/counsellors", icon: Headset, roles: ADMINS },
   { title: "Lead Assignment", url: "/lead-assignment", icon: UserPlus, roles: ADMINS },
   { title: "Seminars", url: "/seminars", icon: CalendarDays, roles: ALL_STAFF },
   { title: "Exams", url: "/exams", icon: FileText, roles: ADMINS },

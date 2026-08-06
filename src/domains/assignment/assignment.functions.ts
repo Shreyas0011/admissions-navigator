@@ -47,6 +47,27 @@ export const togglePolicyFn = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+/** Publishing a policy makes it the single live rule set for auto-assignment. */
+export const publishPolicyFn = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid(), published: z.boolean() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("@/domains/users/access.server");
+    const actor = await requireAdmin(context.supabase, context.userId);
+    const { publishPolicy, unpublishPolicy } = await import("./policies.repo");
+    if (!data.published) {
+      await unpublishPolicy(data.id);
+      return { published: false, assigned: 0 };
+    }
+    await publishPolicy(data.id);
+    // Catch up on anyone who applied while no policy was live.
+    const { runEngineOnQueue } = await import("./assignment.service");
+    const result = await runEngineOnQueue({ actorId: context.userId, actorLabel: actor.label });
+    return { published: true, assigned: result.assigned };
+  });
+
 export const savePoolFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => poolInputSchema.parse(input))
