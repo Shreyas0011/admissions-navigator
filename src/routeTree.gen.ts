@@ -27,6 +27,7 @@ import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalCounsellorRouteImport } from './routes/portal.counsellor'
 import { Route as PortalExamsRouteImport } from './routes/portal.exams'
 import { Route as PortalProgressRouteImport } from './routes/portal.progress'
+import { Route as PortalQrRouteImport } from './routes/portal.qr'
 import { Route as PortalSeminarsRouteImport } from './routes/portal.seminars'
 import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_authenticated.programmes.index'
 import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
@@ -124,6 +125,11 @@ const PortalProgressRoute = PortalProgressRouteImport.update({
   path: '/progress',
   getParentRoute: () => PortalRoute,
 } as any)
+const PortalQrRoute = PortalQrRouteImport.update({
+  id: '/qr',
+  path: '/qr',
+  getParentRoute: () => PortalRoute,
+} as any)
 const PortalSeminarsRoute = PortalSeminarsRouteImport.update({
   id: '/seminars',
   path: '/seminars',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal': typeof PortalIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
+  '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/portal/': typeof PortalIndexRoute
   '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/qr'
     | '/portal/seminars'
     | '/portal/'
     | '/programmes/$programmeId'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/qr'
     | '/portal/seminars'
     | '/portal'
     | '/programmes/$programmeId'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
+    | '/portal/qr'
     | '/portal/seminars'
     | '/portal/'
     | '/_authenticated/programmes/$programmeId'
@@ -438,6 +450,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProgressRouteImport
       parentRoute: typeof PortalRoute
     }
+    '/portal/qr': {
+      id: '/portal/qr'
+      path: '/qr'
+      fullPath: '/portal/qr'
+      preLoaderRoute: typeof PortalQrRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/portal/seminars': {
       id: '/portal/seminars'
       path: '/seminars'
@@ -517,6 +536,7 @@ interface PortalRouteChildren {
   PortalCounsellorRoute: typeof PortalCounsellorRoute
   PortalExamsRoute: typeof PortalExamsRoute
   PortalProgressRoute: typeof PortalProgressRoute
+  PortalQrRoute: typeof PortalQrRoute
   PortalSeminarsRoute: typeof PortalSeminarsRoute
   PortalIndexRoute: typeof PortalIndexRoute
 }
@@ -525,6 +545,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalCounsellorRoute: PortalCounsellorRoute,
   PortalExamsRoute: PortalExamsRoute,
   PortalProgressRoute: PortalProgressRoute,
+  PortalQrRoute: PortalQrRoute,
   PortalSeminarsRoute: PortalSeminarsRoute,
   PortalIndexRoute: PortalIndexRoute,
 }
@@ -542,13 +563,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
