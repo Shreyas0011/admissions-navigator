@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, MapPin, Users, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { SessionAttendancePanel } from "@/components/attendance/SessionAttendancePanel";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
