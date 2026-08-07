@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { GraduationCap, Loader2 } from "lucide-react";
+import { GraduationCap, Loader2, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -163,6 +163,19 @@ function AuthPage() {
           <Button variant="outline" className="h-11 w-full" onClick={handleGoogle}>
             Continue with Google
           </Button>
+
+          <Link
+            to="/seminar-day"
+            className="mt-4 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm text-foreground hover:bg-surface-container"
+          >
+            <span>
+              <span className="block font-medium">Seminar day mode</span>
+              <span className="block text-xs text-muted-foreground">
+                Ground staff check-in — name + seminar password
+              </span>
+            </span>
+            <ScanLine className="size-4 text-primary" />
+          </Link>
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             New student? Your account is created with your application.{" "}

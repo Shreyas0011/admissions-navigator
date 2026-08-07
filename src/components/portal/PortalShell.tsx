@@ -14,6 +14,7 @@ const TABS = [
   { to: "/portal/counsellor", label: "Counsellor" },
   { to: "/portal/seminars", label: "Seminars" },
   { to: "/portal/exams", label: "Exams" },
+  { to: "/portal/qr", label: "My QR" },
 ] as const;
 
 export function PortalShell({ children }: { children: ReactNode }) {

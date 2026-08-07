@@ -34,6 +34,7 @@ export type SessionRow = {
   waitlist_enabled: boolean;
   waitlist_size: number;
   is_open: boolean;
+  ground_password: string | null;
   venues: { name: string; campus: string } | null;
 };
 
@@ -60,7 +61,7 @@ export async function selectSessions(eventIds?: string[]): Promise<SessionRow[]>
   let query = supabaseAdmin
     .from("event_sessions")
     .select(
-      "id, event_id, venue_id, starts_at, ends_at, capacity, reserved_seats, waitlist_enabled, waitlist_size, is_open, venues(name, campus)",
+      "id, event_id, venue_id, starts_at, ends_at, capacity, reserved_seats, waitlist_enabled, waitlist_size, is_open, ground_password, venues(name, campus)",
     )
     .order("starts_at");
   if (eventIds) query = query.in("event_id", eventIds);

@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, MapPin, Users, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { SessionAttendancePanel } from "@/components/attendance/SessionAttendancePanel";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
@@ -75,26 +76,30 @@ function EventDetailPage() {
         <h2 className="text-lg font-semibold text-foreground">Sessions</h2>
         <ul className="mt-4 space-y-3">
           {event.sessions.map((s) => (
-            <li key={s.id} className="flex flex-wrap items-center gap-6 rounded-xl border border-border p-4 text-sm">
-              <span className="flex items-center gap-2 text-foreground">
-                <CalendarClock className="size-4" />
-                {new Date(s.starts_at).toLocaleString(undefined, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
-              </span>
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="size-4" /> {s.venues?.name ?? "Venue TBC"}
-              </span>
-              <span className="flex items-center gap-2 text-muted-foreground">
-                <Users className="size-4" /> {s.booked}/{s.capacity} · {s.seatsLeft} left
-              </span>
+            <li key={s.id} className="rounded-xl border border-border p-4 text-sm">
+              <div className="flex flex-wrap items-center gap-6">
+                <span className="flex items-center gap-2 text-foreground">
+                  <CalendarClock className="size-4" />
+                  {new Date(s.starts_at).toLocaleString(undefined, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
+                </span>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <MapPin className="size-4" /> {s.venues?.name ?? "Venue TBC"}
+                </span>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <Users className="size-4" /> {s.booked}/{s.capacity} · {s.seatsLeft} left
+                </span>
+              </div>
+              <SessionAttendancePanel sessionId={s.id} groundPassword={s.ground_password} />
             </li>
           ))}
           {event.sessions.length === 0 && (
             <li className="text-sm text-muted-foreground">No sessions scheduled.</li>
           )}
         </ul>
+
       </section>
 
       <section className="surface-card overflow-hidden rounded-2xl">
