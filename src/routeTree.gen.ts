@@ -30,6 +30,7 @@ import { Route as PortalProgressRouteImport } from './routes/portal.progress'
 import { Route as PortalQrRouteImport } from './routes/portal.qr'
 import { Route as PortalSeminarsRouteImport } from './routes/portal.seminars'
 import { Route as SeminarDayIndexRouteImport } from './routes/seminar-day.index'
+import { Route as SeminarDayConsoleRouteImport } from './routes/seminar-day.console'
 import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_authenticated.programmes.index'
 import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
 import { Route as AuthenticatedSeminarsIndexRouteImport } from './routes/_authenticated.seminars.index'
@@ -141,6 +142,11 @@ const SeminarDayIndexRoute = SeminarDayIndexRouteImport.update({
   path: '/seminar-day/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeminarDayConsoleRoute = SeminarDayConsoleRouteImport.update({
+  id: '/seminar-day/console',
+  path: '/seminar-day/console',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProgrammesIndexRoute =
   AuthenticatedProgrammesIndexRouteImport.update({
     id: '/programmes/',
@@ -185,6 +191,7 @@ export interface FileRoutesByFullPath {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
+  '/seminar-day/console': typeof SeminarDayConsoleRoute
   '/portal/': typeof PortalIndexRoute
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
+  '/seminar-day/console': typeof SeminarDayConsoleRoute
   '/portal': typeof PortalIndexRoute
   '/seminar-day': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
+  '/seminar-day/console': typeof SeminarDayConsoleRoute
   '/portal/': typeof PortalIndexRoute
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
@@ -266,6 +275,7 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
+    | '/seminar-day/console'
     | '/portal/'
     | '/seminar-day/'
     | '/programmes/$programmeId'
@@ -291,6 +301,7 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
+    | '/seminar-day/console'
     | '/portal'
     | '/seminar-day'
     | '/programmes/$programmeId'
@@ -318,6 +329,7 @@ export interface FileRouteTypes {
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
+    | '/seminar-day/console'
     | '/portal/'
     | '/seminar-day/'
     | '/_authenticated/programmes/$programmeId'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
   StudentLoginRoute: typeof StudentLoginRoute
+  SeminarDayConsoleRoute: typeof SeminarDayConsoleRoute
   SeminarDayIndexRoute: typeof SeminarDayIndexRoute
 }
 
@@ -484,6 +497,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeminarDayIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seminar-day/console': {
+      id: '/seminar-day/console'
+      path: '/seminar-day/console'
+      fullPath: '/seminar-day/console'
+      preLoaderRoute: typeof SeminarDayConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/programmes/': {
       id: '/_authenticated/programmes/'
       path: '/programmes'
@@ -579,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
   StudentLoginRoute: StudentLoginRoute,
+  SeminarDayConsoleRoute: SeminarDayConsoleRoute,
   SeminarDayIndexRoute: SeminarDayIndexRoute,
 }
 export const routeTree = rootRouteImport
