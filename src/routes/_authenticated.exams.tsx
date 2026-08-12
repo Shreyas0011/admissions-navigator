@@ -7,6 +7,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getExams } from "@/domains/events/events.functions";
 import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/exams")({
   head: () => ({
@@ -15,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/exams")({
       { name: "description", content: "Entrance exam slots, centres and hall-ticket readiness." },
     ],
   }),
-  component: ExamsPage,
+  component: GuardedExamsPage,
 });
 
 function ExamsPage() {
@@ -58,5 +59,13 @@ function ExamsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function GuardedExamsPage() {
+  return (
+    <AdminOnly>
+      <ExamsPage />
+    </AdminOnly>
   );
 }

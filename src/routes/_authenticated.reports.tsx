@@ -6,6 +6,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STAGE_MAP } from "@/config/constants";
 import { getPipelineOverview } from "@/domains/analytics/analytics.functions";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/reports")({
   head: () => ({
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
       { name: "description", content: "Conversion, stage distribution and lead source performance." },
     ],
   }),
-  component: ReportsPage,
+  component: GuardedReportsPage,
 });
 
 function ReportsPage() {
@@ -79,5 +80,13 @@ function ReportsPage() {
         </section>
       </div>
     </div>
+  );
+}
+
+function GuardedReportsPage() {
+  return (
+    <AdminOnly>
+      <ReportsPage />
+    </AdminOnly>
   );
 }

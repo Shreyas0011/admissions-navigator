@@ -8,6 +8,7 @@ import { StageBadge } from "@/components/shared/StageBadge";
 import type { AdmissionStage } from "@/domains/admissions/types";
 import { getProgrammeFn } from "@/domains/programmes/programmes.functions";
 import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/programmes/$programmeId")({
   head: () => ({
@@ -16,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/programmes/$programmeId")(
       { name: "description", content: "Applicant pipeline and configuration for a single programme." },
     ],
   }),
-  component: ProgrammeDetailPage,
+  component: GuardedProgrammeDetailPage,
 });
 
 function ProgrammeDetailPage() {
@@ -85,5 +86,13 @@ function ProgrammeDetailPage() {
         </dl>
       </section>
     </div>
+  );
+}
+
+function GuardedProgrammeDetailPage() {
+  return (
+    <AdminOnly>
+      <ProgrammeDetailPage />
+    </AdminOnly>
   );
 }

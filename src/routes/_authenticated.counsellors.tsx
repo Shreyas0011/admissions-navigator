@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { CounsellorCreateForm } from "@/components/counsellors/CounsellorCreateForm";
 import { CounsellorList } from "@/components/counsellors/CounsellorList";
 import { CounsellorDetailDrawer } from "@/components/counsellors/CounsellorDetailDrawer";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/counsellors")({
   head: () => ({
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/_authenticated/counsellors")({
       },
     ],
   }),
-  component: CounsellorsPage,
+  component: GuardedCounsellorsPage,
 });
 
 function CounsellorsPage() {
@@ -38,5 +39,13 @@ function CounsellorsPage() {
       <CounsellorList onSelect={setSelected} />
       <CounsellorDetailDrawer counsellorId={selected} onClose={() => setSelected(null)} />
     </div>
+  );
+}
+
+function GuardedCounsellorsPage() {
+  return (
+    <AdminOnly>
+      <CounsellorsPage />
+    </AdminOnly>
   );
 }

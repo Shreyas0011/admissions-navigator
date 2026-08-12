@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { listEmailQueue } from "@/domains/notifications/notifications.functions";
 import { Mail } from "lucide-react";
 import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/emails")({
   head: () => ({
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/emails")({
       },
     ],
   }),
-  component: EmailsPage,
+  component: GuardedEmailsPage,
 });
 
 function EmailsPage() {
@@ -92,5 +93,13 @@ function EmailsPage() {
         )}
       </section>
     </div>
+  );
+}
+
+function GuardedEmailsPage() {
+  return (
+    <AdminOnly>
+      <EmailsPage />
+    </AdminOnly>
   );
 }

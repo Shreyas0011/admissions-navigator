@@ -16,6 +16,7 @@ import {
   publishEventFn,
 } from "@/domains/events/events.functions";
 import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/seminars/")({
   head: () => ({
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/seminars/")({
       },
     ],
   }),
-  component: SeminarsPage,
+  component: GuardedSeminarsPage,
 });
 
 function SeminarsPage() {
@@ -162,5 +163,13 @@ function SeminarsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function GuardedSeminarsPage() {
+  return (
+    <AdminOnly>
+      <SeminarsPage />
+    </AdminOnly>
   );
 }

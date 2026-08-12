@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { autoAllocateFn, getEventFn, publishEventFn } from "@/domains/events/events.functions";
 import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/seminars/$eventId")({
   head: () => ({
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/seminars/$eventId")({
       { name: "description", content: "Sessions, seat usage and bookings for a single event." },
     ],
   }),
-  component: EventDetailPage,
+  component: GuardedEventDetailPage,
 });
 
 function EventDetailPage() {
@@ -139,5 +140,13 @@ function EventDetailPage() {
         </table>
       </section>
     </div>
+  );
+}
+
+function GuardedEventDetailPage() {
+  return (
+    <AdminOnly>
+      <EventDetailPage />
+    </AdminOnly>
   );
 }

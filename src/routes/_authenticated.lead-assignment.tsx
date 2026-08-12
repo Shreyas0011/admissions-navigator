@@ -13,6 +13,7 @@ import { PoolPanel } from "@/components/assignment/PoolPanel";
 import { RulePanel } from "@/components/assignment/RulePanel";
 import { AssignmentLog } from "@/components/assignment/AssignmentLog";
 import { getEngineConsoleFn, runEngineQueueFn } from "@/domains/assignment/assignment.functions";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/lead-assignment")({
   head: () => ({
@@ -24,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/lead-assignment")({
       },
     ],
   }),
-  component: AssignmentEnginePage,
+  component: GuardedAssignmentEnginePage,
 });
 
 function AssignmentEnginePage() {
@@ -99,5 +100,13 @@ function AssignmentEnginePage() {
         </Tabs>
       )}
     </div>
+  );
+}
+
+function GuardedAssignmentEnginePage() {
+  return (
+    <AdminOnly>
+      <AssignmentEnginePage />
+    </AdminOnly>
   );
 }
