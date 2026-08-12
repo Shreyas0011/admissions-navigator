@@ -43,3 +43,36 @@ export async function requireAdmin(supabase: UserClient, userId: string): Promis
   if (!actor.isAdmin) throw new Error("Forbidden: admin role required");
   return actor;
 }
+
+/**
+ * Persona scope for student data: admins see everything, a counsellor is
+ * pinned to their own allocated students, any other staff role sees nothing.
+ */
+export async function studentScope(supabase: UserClient, userId: string) {
+  const actor = await requireStaff(supabase, userId);
+  if (actor.isAdmin) return { actor, counsellorId: null as string | null };
+
+  const { data } = await supabase
+    .from("counsellors")
+    .select("id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!data) throw new Error("Forbidden: no counsellor profile for this account");
+  return { actor, counsellorId: data.id };
+}
+
+export async function assertStudentVisible(
+  supabase: UserClient,
+  userId: string,
+  studentId: string,
+) {
+  const { counsellorId } = await studentScope(supabase, userId);
+  if (!counsellorId) return;
+  const { data } = await supabase
+    .from("students")
+    .select("id")
+    .eq("id", studentId)
+    .eq("counsellor_id", counsellorId)
+    .maybeSingle();
+  if (!data) throw new Error("Forbidden: this student is not allocated to you");
+}
