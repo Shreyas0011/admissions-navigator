@@ -20,15 +20,20 @@ export const submitEnquiry = createServerFn({ method: "POST" })
 export const listStudents = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => registryQuerySchema.parse(input ?? {}))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { studentScope } = await import("@/domains/users/access.server");
+    const { counsellorId } = await studentScope(context.supabase, context.userId);
     const { queryRegistry } = await import("@/domains/students/students.server");
-    return queryRegistry(data);
+    // A counsellor may only ever read their own allocated students.
+    return queryRegistry(counsellorId ? { ...data, counsellorId } : data);
   });
 
 export const getStudent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { assertStudentVisible } = await import("@/domains/users/access.server");
+    await assertStudentVisible(context.supabase, context.userId, data.id);
     const { getStudentById, getStudentTimeline } = await import(
       "@/domains/students/students.server"
     );
@@ -85,7 +90,9 @@ export const submitApplication = createServerFn({ method: "POST" })
 export const getStudentDetailFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { assertStudentVisible } = await import("@/domains/users/access.server");
+    await assertStudentVisible(context.supabase, context.userId, data.id);
     const { getStudentDetail } = await import("@/domains/students/detail.server");
     return getStudentDetail(data.id);
   });
