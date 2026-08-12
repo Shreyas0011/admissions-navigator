@@ -167,6 +167,16 @@ function StudentsPage() {
 
       <StudentDetailDrawer studentId={openStudentId} onClose={() => setOpenStudentId(null)} />
 
+      <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Bulk upload students</DialogTitle>
+          </DialogHeader>
+          <BulkUploadPanel />
+        </DialogContent>
+      </Dialog>
+
+
       <Dialog
         open={Boolean(search.new)}
         onOpenChange={(open) => !open && navigate({ search: {} })}
