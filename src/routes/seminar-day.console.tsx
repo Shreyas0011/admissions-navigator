@@ -9,12 +9,12 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-import { formatTime } from "@/lib/datetime";
   groundBoardFn,
   groundLogoutFn,
   groundMarkAttendanceFn,
   groundScanFn,
 } from "@/domains/attendance/attendance.functions";
+import { formatTime } from "@/lib/datetime";
 
 type Scan = Awaited<ReturnType<typeof groundScanFn>>;
 

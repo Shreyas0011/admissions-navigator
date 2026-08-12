@@ -6,10 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-import { formatTime } from "@/lib/datetime";
   getSessionAttendanceFn,
   setGroundPasswordFn,
 } from "@/domains/attendance/attendance.functions";
+import { formatTime } from "@/lib/datetime";
 
 type Props = {
   sessionId: string;

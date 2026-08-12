@@ -11,11 +11,11 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EventForm } from "@/components/events/EventForm";
 import {
-import { formatDateTime } from "@/lib/datetime";
   autoAllocateFn,
   listEventsFn,
   publishEventFn,
 } from "@/domains/events/events.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/_authenticated/seminars/")({
   head: () => ({
