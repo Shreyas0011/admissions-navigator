@@ -49,8 +49,9 @@ export const moveStudentStage = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => stageTransitionSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { transitionStage } = await import("@/domains/students/students.server");
-    const { requireStaff } = await import("@/domains/users/access.server");
+    const { requireStaff, assertStudentVisible } = await import("@/domains/users/access.server");
     const actor = await requireStaff(context.supabase, context.userId);
+    await assertStudentVisible(context.supabase, context.userId, data.studentId);
     return transitionStage({
       studentId: data.studentId,
       toStage: data.toStage,
@@ -101,8 +102,9 @@ export const logStudentCall = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => callLogSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { requireStaff } = await import("@/domains/users/access.server");
+    const { requireStaff, assertStudentVisible } = await import("@/domains/users/access.server");
     await requireStaff(context.supabase, context.userId);
+    await assertStudentVisible(context.supabase, context.userId, data.studentId);
     const { logCall } = await import("@/domains/counsellors/leads.server");
     return logCall(context.userId, data);
   });
