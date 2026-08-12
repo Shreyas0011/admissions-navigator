@@ -160,15 +160,12 @@ function MyLeadsPage() {
           <DialogHeader>
             <DialogTitle>Log a call</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="call-at">Date & time of call</Label>
-            <Input
-              id="call-at"
-              type="datetime-local"
-              value={calledAt}
-              onChange={(e) => setCalledAt(e.target.value)}
-            />
-          </div>
+          <DateTimeField
+            id="call-at"
+            label="Date & time of call"
+            value={calledAt}
+            onChange={setCalledAt}
+          />
           <Select value={outcome} onValueChange={setOutcome}>
             <SelectTrigger>
               <SelectValue />
