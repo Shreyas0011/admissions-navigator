@@ -99,3 +99,17 @@ export const logStudentCall = createServerFn({ method: "POST" })
     const { logCall } = await import("@/domains/counsellors/leads.server");
     return logCall(context.userId, data);
   });
+
+/** Admin-only: create many students from a validated spreadsheet upload. */
+export const bulkImportStudents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(async (input: unknown) => {
+    const { bulkImportSchema } = await import("@/domains/students/bulk.schema");
+    return bulkImportSchema.parse(input);
+  })
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("@/domains/users/access.server");
+    await requireAdmin(context.supabase, context.userId);
+    const { importStudents } = await import("@/domains/students/bulk.server");
+    return importStudents(data.rows);
+  });
