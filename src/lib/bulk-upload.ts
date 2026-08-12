@@ -67,9 +67,10 @@ export async function parseUpload(file: File): Promise<ParsedRow[]> {
         raw[key.trim().toLowerCase().replace(/\s+/g, "_")] = normaliseCell(record[key]);
       }
       const candidate = Object.fromEntries(
-        BULK_COLUMNS.map((c) => [c, (raw[c] ?? "").toUpperCase && c === "lead_source"
-          ? (raw[c] ?? "").toUpperCase()
-          : (raw[c] ?? "")]),
+        BULK_COLUMNS.map((c) => {
+          const cell = raw[c] ?? "";
+          return [c, c === "lead_source" ? cell.toUpperCase() : cell];
+        }),
       );
       const parsed = bulkRowSchema.safeParse(candidate);
       return {
