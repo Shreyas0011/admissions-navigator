@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimeField } from "@/components/shared/DateTimeField";
 import { programmeInputSchema, type ProgrammeInput } from "@/domains/programmes/schema";
 import { listAcademicYearsFn, saveProgrammeFn } from "@/domains/programmes/programmes.functions";
 
@@ -90,10 +91,16 @@ export function ProgrammeForm({ onDone }: { onDone: () => void }) {
         <Input {...form.register("duration")} placeholder="4 years" />
       </Field>
       <Field label="Applications open" error={e.applicationsOpenAt?.message}>
-        <Input type="datetime-local" {...form.register("applicationsOpenAt")} />
+        <DateTimeField
+          value={form.watch("applicationsOpenAt") ?? ""}
+          onChange={(v) => form.setValue("applicationsOpenAt", v)}
+        />
       </Field>
       <Field label="Applications close" error={e.applicationsCloseAt?.message}>
-        <Input type="datetime-local" {...form.register("applicationsCloseAt")} />
+        <DateTimeField
+          value={form.watch("applicationsCloseAt") ?? ""}
+          onChange={(v) => form.setValue("applicationsCloseAt", v)}
+        />
       </Field>
       <Field label="Status" error={e.status?.message}>
         <Select

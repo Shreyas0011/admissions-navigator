@@ -7,6 +7,8 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listEmailQueue } from "@/domains/notifications/notifications.functions";
 import { Mail } from "lucide-react";
+import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/emails")({
   head: () => ({
@@ -18,7 +20,7 @@ export const Route = createFileRoute("/_authenticated/emails")({
       },
     ],
   }),
-  component: EmailsPage,
+  component: GuardedEmailsPage,
 });
 
 function EmailsPage() {
@@ -82,7 +84,7 @@ function EmailsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-3 text-xs text-muted-foreground">
-                    {new Date(row.created_at).toLocaleString()}
+                    {formatDateTime(row.created_at)}
                   </td>
                 </tr>
               ))}
@@ -91,5 +93,13 @@ function EmailsPage() {
         )}
       </section>
     </div>
+  );
+}
+
+function GuardedEmailsPage() {
+  return (
+    <AdminOnly>
+      <EmailsPage />
+    </AdminOnly>
   );
 }

@@ -9,6 +9,8 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { autoAllocateFn, getEventFn, publishEventFn } from "@/domains/events/events.functions";
+import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/seminars/$eventId")({
   head: () => ({
@@ -17,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/seminars/$eventId")({
       { name: "description", content: "Sessions, seat usage and bookings for a single event." },
     ],
   }),
-  component: EventDetailPage,
+  component: GuardedEventDetailPage,
 });
 
 function EventDetailPage() {
@@ -80,10 +82,7 @@ function EventDetailPage() {
               <div className="flex flex-wrap items-center gap-6">
                 <span className="flex items-center gap-2 text-foreground">
                   <CalendarClock className="size-4" />
-                  {new Date(s.starts_at).toLocaleString(undefined, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  {formatDateTime(s.starts_at)}
                 </span>
                 <span className="flex items-center gap-2 text-muted-foreground">
                   <MapPin className="size-4" /> {s.venues?.name ?? "Venue TBC"}
@@ -132,7 +131,7 @@ function EventDetailPage() {
                   </td>
                   <td className="px-6 py-4">{b.status}</td>
                   <td className="px-6 py-4 text-muted-foreground">
-                    {new Date(b.booked_at).toLocaleString()}
+                    {formatDateTime(b.booked_at)}
                   </td>
                 </tr>
               ))
@@ -141,5 +140,13 @@ function EventDetailPage() {
         </table>
       </section>
     </div>
+  );
+}
+
+function GuardedEventDetailPage() {
+  return (
+    <AdminOnly>
+      <EventDetailPage />
+    </AdminOnly>
   );
 }

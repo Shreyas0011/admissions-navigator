@@ -50,7 +50,7 @@ export const NAV_ITEMS: NavItem[] = [
   { title: "My Leads", url: "/my-leads", icon: PhoneCall, roles: ["counsellor"] },
   { title: "Counsellors", url: "/counsellors", icon: Headset, roles: ADMINS },
   { title: "Lead Assignment", url: "/lead-assignment", icon: UserPlus, roles: ADMINS },
-  { title: "Seminars", url: "/seminars", icon: CalendarDays, roles: ALL_STAFF },
+  { title: "Seminars", url: "/seminars", icon: CalendarDays, roles: ADMINS },
   { title: "Exams", url: "/exams", icon: FileText, roles: ADMINS },
   { title: "Emails", url: "/emails", icon: Mail, roles: ADMINS },
   { title: "Reports", url: "/reports", icon: BarChart3, roles: ADMINS },

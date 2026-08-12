@@ -15,6 +15,8 @@ import {
   listEventsFn,
   publishEventFn,
 } from "@/domains/events/events.functions";
+import { formatDateTime } from "@/lib/datetime";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/seminars/")({
   head: () => ({
@@ -26,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/seminars/")({
       },
     ],
   }),
-  component: SeminarsPage,
+  component: GuardedSeminarsPage,
 });
 
 function SeminarsPage() {
@@ -115,10 +117,7 @@ function SeminarsPage() {
                     <div key={session.id} className="flex flex-wrap items-center gap-3">
                       <span className="flex items-center gap-2">
                         <CalendarClock className="size-4" />
-                        {new Date(session.starts_at).toLocaleString(undefined, {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
+                        {formatDateTime(session.starts_at)}
                       </span>
                       <span className="flex items-center gap-2">
                         <MapPin className="size-4" />
@@ -164,5 +163,13 @@ function SeminarsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+function GuardedSeminarsPage() {
+  return (
+    <AdminOnly>
+      <SeminarsPage />
+    </AdminOnly>
   );
 }

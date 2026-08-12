@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { Plus } from "lucide-react";
+import { Plus, Upload } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -14,6 +14,7 @@ import { StudentTable } from "@/components/students/StudentTable";
 import { StudentFilters, type RegistryFilters } from "@/components/students/StudentFilters";
 import { StudentDetailDrawer } from "@/components/students/StudentDetailDrawer";
 import { EnquiryForm } from "@/components/students/EnquiryForm";
+import { BulkUploadPanel } from "@/components/students/BulkUploadPanel";
 import { listStudents } from "@/domains/students/students.functions";
 import { listCounsellors } from "@/domains/counsellors/counsellors.functions";
 import { PAGE_SIZE } from "@/config/constants";
@@ -46,6 +47,7 @@ function StudentsPage() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<string[]>([]);
   const [openStudentId, setOpenStudentId] = useState<string | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
 
   const queryInput = useMemo(
     () => ({
@@ -124,6 +126,14 @@ function StudentsPage() {
               </>
             )}
             <Button
+              variant="outline"
+              className="h-auto rounded-2xl px-6"
+              onClick={() => setBulkOpen(true)}
+            >
+              <Upload className="size-4" />
+              Bulk upload
+            </Button>
+            <Button
               className="h-auto rounded-2xl px-6"
               onClick={() => navigate({ search: { new: true } })}
             >
@@ -166,6 +176,16 @@ function StudentsPage() {
       </section>
 
       <StudentDetailDrawer studentId={openStudentId} onClose={() => setOpenStudentId(null)} />
+
+      <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Bulk upload students</DialogTitle>
+          </DialogHeader>
+          <BulkUploadPanel />
+        </DialogContent>
+      </Dialog>
+
 
       <Dialog
         open={Boolean(search.new)}

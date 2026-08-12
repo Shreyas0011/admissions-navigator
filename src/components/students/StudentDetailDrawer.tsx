@@ -17,15 +17,10 @@ import { nextStages } from "@/domains/admissions/types";
 import type { AdmissionStage } from "@/domains/admissions/types";
 import { getStudentDetailFn, moveStudentStage } from "@/domains/students/students.functions";
 import { runAssignmentFn } from "@/domains/assignment/assignment.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 function formatDate(value: string) {
-  return new Date(value).toLocaleString(undefined, {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatDateTime(value);
 }
 
 export function StudentDetailDrawer({

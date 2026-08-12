@@ -12,7 +12,9 @@ function config() {
     password,
     name: "ground-staff",
     maxAge: 60 * 60 * 12,
-    cookie: { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" },
+    // The app is served inside a cross-site preview iframe, where a Lax
+    // cookie is never sent back — the console would always read "expired".
+    cookie: { httpOnly: true, secure: true, sameSite: "none" as const, path: "/" },
   };
 }
 

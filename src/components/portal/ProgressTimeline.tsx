@@ -3,6 +3,7 @@ import { Check, Circle } from "lucide-react";
 import { STAGE_MAP } from "@/config/constants";
 import type { AdmissionStage } from "@/domains/admissions/types";
 import { cn } from "@/lib/utils";
+import { formatDateTime } from "@/lib/datetime";
 
 export type ProgressStep = {
   stage: AdmissionStage;
@@ -51,10 +52,7 @@ export function ProgressTimeline({ steps }: { steps: ProgressStep[] }) {
             </p>
             <p className="text-xs text-muted-foreground">
               {step.at
-                ? new Date(step.at).toLocaleString(undefined, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })
+                ? formatDateTime(step.at)
                 : step.current
                   ? "In progress"
                   : "Pending"}

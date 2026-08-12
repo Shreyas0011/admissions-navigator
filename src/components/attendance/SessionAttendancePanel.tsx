@@ -9,6 +9,7 @@ import {
   getSessionAttendanceFn,
   setGroundPasswordFn,
 } from "@/domains/attendance/attendance.functions";
+import { formatTime } from "@/lib/datetime";
 
 type Props = {
   sessionId: string;
@@ -85,7 +86,7 @@ export function SessionAttendancePanel({ sessionId, groundPassword }: Props) {
                 id: a.id,
                 name: a.students?.full_name ?? "Student",
                 code: a.students?.student_code ?? "—",
-                meta: `${a.is_walk_in ? "Walk-in" : "Registered"} · ${new Date(a.scanned_at).toLocaleTimeString()}`,
+                meta: `${a.is_walk_in ? "Walk-in" : "Registered"} · ${formatTime(a.scanned_at)}`,
               }))}
             />
           </div>

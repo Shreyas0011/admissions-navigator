@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { listMySessionsFn, registerForSessionFn } from "@/domains/portal/portal.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/portal/seminars")({
   head: () => ({
@@ -89,10 +90,7 @@ function PortalSeminars() {
                       <div className="space-y-1 text-sm">
                         <p className="flex items-center gap-2 font-medium text-foreground">
                           <CalendarClock className="size-4" />
-                          {new Date(s.startsAt).toLocaleString(undefined, {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })}
+                          {formatDateTime(s.startsAt)}
                         </p>
                         <p className="flex items-center gap-4 text-muted-foreground">
                           <span className="flex items-center gap-2">

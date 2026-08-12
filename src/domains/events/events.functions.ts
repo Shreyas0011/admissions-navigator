@@ -8,7 +8,9 @@ const idSchema = z.object({ id: z.string().uuid() });
 
 export const listEventsFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+    const { requireAdmin } = await import("@/domains/users/access.server");
+    await requireAdmin(context.supabase, context.userId);
     const { listEvents } = await import("./events.service");
     return listEvents();
   });
@@ -16,7 +18,9 @@ export const listEventsFn = createServerFn({ method: "POST" })
 export const getEventFn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => idSchema.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
+    const { requireAdmin } = await import("@/domains/users/access.server");
+    await requireAdmin(context.supabase, context.userId);
     const { getEventDetail } = await import("./events.service");
     return getEventDetail(data.id);
   });
@@ -84,7 +88,9 @@ export const autoAllocateFn = createServerFn({ method: "POST" })
 
 export const getExams = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
+  .handler(async ({ context }) => {
+    const { requireAdmin } = await import("@/domains/users/access.server");
+    await requireAdmin(context.supabase, context.userId);
     const { listExams } = await import("./events.server");
     return listExams();
   });

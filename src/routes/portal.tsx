@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 import { PortalShell } from "@/components/portal/PortalShell";
+import { StudentPasswordGate } from "@/components/portal/StudentPasswordGate";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/portal")({
@@ -11,7 +12,9 @@ export const Route = createFileRoute("/portal")({
   },
   component: () => (
     <PortalShell>
-      <Outlet />
+      <StudentPasswordGate>
+        <Outlet />
+      </StudentPasswordGate>
     </PortalShell>
   ),
 });

@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { APP_NAME } from "@/config/constants";
 import { groundLoginFn, listTodaySessionsFn } from "@/domains/attendance/attendance.functions";
 import { cn } from "@/lib/utils";
+import { formatTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/seminar-day/")({
   ssr: false,
@@ -96,15 +97,9 @@ function SeminarDayLogin() {
                   <p className="mt-1 text-base font-semibold text-foreground">{s.title}</p>
                   <p className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                     <CalendarClock className="size-4" />
-                    {new Date(s.startsAt).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
+                    {formatTime(s.startsAt)}{" "}
                     –{" "}
-                    {new Date(s.endsAt).toLocaleTimeString(undefined, {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
+                    {formatTime(s.endsAt)}
                   </p>
                   <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="size-4" /> {s.venue}

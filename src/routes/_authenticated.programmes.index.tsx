@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ProgrammeTable } from "@/components/programmes/ProgrammeTable";
 import { ProgrammeForm } from "@/components/programmes/ProgrammeForm";
 import { listProgrammesFn } from "@/domains/programmes/programmes.functions";
+import { AdminOnly } from "@/components/shared/AdminOnly";
 
 export const Route = createFileRoute("/_authenticated/programmes/")({
   head: () => ({
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/programmes/")({
       },
     ],
   }),
-  component: ProgrammesPage,
+  component: GuardedProgrammesPage,
 });
 
 function ProgrammesPage() {
@@ -67,5 +68,13 @@ function ProgrammesPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function GuardedProgrammesPage() {
+  return (
+    <AdminOnly>
+      <ProgrammesPage />
+    </AdminOnly>
   );
 }

@@ -11,8 +11,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { DateTimeField } from "@/components/shared/DateTimeField";
 import {
   Select,
   SelectContent,
@@ -25,6 +24,7 @@ import { listMyLeadsFn } from "@/domains/counsellors/counsellors.functions";
 import { logStudentCall, moveStudentStage } from "@/domains/students/students.functions";
 import { nextStages, type AdmissionStage } from "@/domains/admissions/types";
 import { STAGE_MAP } from "@/config/constants";
+import { formatDateTime } from "@/lib/datetime";
 
 const OUTCOMES = [
   "CONNECTED",
@@ -143,7 +143,7 @@ function MyLeadsPage() {
                     <div key={call.id} className="rounded-xl bg-surface-low px-3 py-2 text-xs">
                       <p className="font-medium text-foreground">
                         {call.outcome.replace(/_/g, " ").toLowerCase()} ·{" "}
-                        {new Date(call.called_at).toLocaleString()}
+                        {formatDateTime(call.called_at)}
                       </p>
                       {call.notes && <p className="mt-1 text-muted-foreground">{call.notes}</p>}
                     </div>
@@ -160,15 +160,12 @@ function MyLeadsPage() {
           <DialogHeader>
             <DialogTitle>Log a call</DialogTitle>
           </DialogHeader>
-          <div className="space-y-2">
-            <Label htmlFor="call-at">Date & time of call</Label>
-            <Input
-              id="call-at"
-              type="datetime-local"
-              value={calledAt}
-              onChange={(e) => setCalledAt(e.target.value)}
-            />
-          </div>
+          <DateTimeField
+            id="call-at"
+            label="Date & time of call"
+            value={calledAt}
+            onChange={setCalledAt}
+          />
           <Select value={outcome} onValueChange={setOutcome}>
             <SelectTrigger>
               <SelectValue />
