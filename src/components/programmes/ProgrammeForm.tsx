@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimeField } from "@/components/shared/DateTimeField";
 import { programmeInputSchema, type ProgrammeInput } from "@/domains/programmes/schema";
 import { listAcademicYearsFn, saveProgrammeFn } from "@/domains/programmes/programmes.functions";
 
