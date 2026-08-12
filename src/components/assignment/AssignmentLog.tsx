@@ -1,4 +1,5 @@
 import type { EngineLogRow } from "./types";
+import { formatDateTime } from "@/lib/datetime";
 
 export function AssignmentLog({ rows }: { rows: EngineLogRow[] }) {
   if (rows.length === 0) {
@@ -27,10 +28,7 @@ export function AssignmentLog({ rows }: { rows: EngineLogRow[] }) {
           {rows.map((row) => (
             <tr key={row.id} className="border-t border-border align-top">
               <td className="px-6 py-4 text-muted-foreground">
-                {new Date(row.created_at).toLocaleString(undefined, {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                })}
+                {formatDateTime(row.created_at)}
               </td>
               <td className="px-6 py-4 text-foreground">
                 {row.students?.full_name ?? "—"}

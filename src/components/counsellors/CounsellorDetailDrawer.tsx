@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StageBadge } from "@/components/shared/StageBadge";
 import { getCounsellorDetailFn } from "@/domains/counsellors/counsellors.functions";
 import type { AdmissionStage } from "@/domains/admissions/types";
+import { formatDateTime } from "@/lib/datetime";
 
 /** Admin view of one counsellor: allocated students, progress and call logs. */
 export function CounsellorDetailDrawer({
@@ -72,7 +73,7 @@ export function CounsellorDetailDrawer({
                           <div key={call.id} className="rounded-xl bg-background px-3 py-2 text-xs">
                             <p className="font-medium text-foreground">
                               {call.outcome.replace(/_/g, " ").toLowerCase()} ·{" "}
-                              {new Date(call.called_at).toLocaleString()}
+                              {formatDateTime(call.called_at)}
                             </p>
                             {call.notes && (
                               <p className="mt-1 text-muted-foreground">{call.notes}</p>

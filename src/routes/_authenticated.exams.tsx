@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { StatCard } from "@/components/shared/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getExams } from "@/domains/events/events.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/_authenticated/exams")({
   head: () => ({
@@ -41,10 +42,7 @@ function ExamsPage() {
               <dl className="mt-4 space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <CalendarClock className="size-4" />
-                  {new Date(exam.scheduled_at).toLocaleString(undefined, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  })}
+                  {formatDateTime(exam.scheduled_at)}
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="size-4" />

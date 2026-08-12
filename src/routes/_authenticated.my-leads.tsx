@@ -25,6 +25,7 @@ import { listMyLeadsFn } from "@/domains/counsellors/counsellors.functions";
 import { logStudentCall, moveStudentStage } from "@/domains/students/students.functions";
 import { nextStages, type AdmissionStage } from "@/domains/admissions/types";
 import { STAGE_MAP } from "@/config/constants";
+import { formatDateTime } from "@/lib/datetime";
 
 const OUTCOMES = [
   "CONNECTED",
@@ -143,7 +144,7 @@ function MyLeadsPage() {
                     <div key={call.id} className="rounded-xl bg-surface-low px-3 py-2 text-xs">
                       <p className="font-medium text-foreground">
                         {call.outcome.replace(/_/g, " ").toLowerCase()} ·{" "}
-                        {new Date(call.called_at).toLocaleString()}
+                        {formatDateTime(call.called_at)}
                       </p>
                       {call.notes && <p className="mt-1 text-muted-foreground">{call.notes}</p>}
                     </div>

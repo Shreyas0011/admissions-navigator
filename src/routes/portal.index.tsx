@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StageBadge } from "@/components/shared/StageBadge";
 import type { AdmissionStage } from "@/domains/admissions/types";
 import { getMyApplicationFn } from "@/domains/portal/portal.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/portal/")({
   head: () => ({
@@ -72,7 +73,7 @@ function PortalHome() {
                 </p>
                 <p className="text-muted-foreground">
                   {b.event_sessions
-                    ? `${new Date(b.event_sessions.starts_at).toLocaleString()} · ${b.event_sessions.venues?.name ?? "Venue TBC"}`
+                    ? `${formatDateTime(b.event_sessions.starts_at)} · ${b.event_sessions.venues?.name ?? "Venue TBC"}`
                     : "Schedule to be confirmed"}{" "}
                   · {b.status}
                 </p>

@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EventForm } from "@/components/events/EventForm";
 import {
+import { formatDateTime } from "@/lib/datetime";
   autoAllocateFn,
   listEventsFn,
   publishEventFn,
@@ -115,10 +116,7 @@ function SeminarsPage() {
                     <div key={session.id} className="flex flex-wrap items-center gap-3">
                       <span className="flex items-center gap-2">
                         <CalendarClock className="size-4" />
-                        {new Date(session.starts_at).toLocaleString(undefined, {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })}
+                        {formatDateTime(session.starts_at)}
                       </span>
                       <span className="flex items-center gap-2">
                         <MapPin className="size-4" />

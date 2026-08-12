@@ -8,6 +8,7 @@ import { StageBadge } from "@/components/shared/StageBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { STAGE_MAP } from "@/config/constants";
 import { getPipelineOverview } from "@/domains/analytics/analytics.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -128,7 +129,7 @@ function DashboardPage() {
               <span className="text-sm font-medium text-foreground">{event.studentName}</span>
               <span className="font-mono text-xs text-muted-foreground">{event.studentCode}</span>
               <span className="ml-auto text-xs text-muted-foreground">
-                {event.actorLabel} · {new Date(event.createdAt).toLocaleString()}
+                {event.actorLabel} · {formatDateTime(event.createdAt)}
               </span>
             </li>
           ))}

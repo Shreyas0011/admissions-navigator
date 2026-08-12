@@ -9,6 +9,7 @@ import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+import { formatTime } from "@/lib/datetime";
   groundBoardFn,
   groundLogoutFn,
   groundMarkAttendanceFn,
@@ -90,10 +91,7 @@ function ConsolePage() {
             <p className="text-lg font-bold text-sidebar-accent-foreground">{data.session.title}</p>
             <p className="text-xs text-sidebar-foreground/70">
               {data.session.venue} ·{" "}
-              {new Date(data.session.startsAt).toLocaleTimeString(undefined, {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
+              {formatTime(data.session.startsAt)}{" "}
               · Staff: {data.staffName}
             </p>
           </div>
@@ -185,10 +183,7 @@ function ConsolePage() {
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {a.is_walk_in ? "Walk-in" : "Registered"} ·{" "}
-                  {new Date(a.scanned_at).toLocaleTimeString(undefined, {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
+                  {formatTime(a.scanned_at)}
                 </span>
               </li>
             ))}

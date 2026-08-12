@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { Skeleton } from "@/components/ui/skeleton";
 import { listEmailQueue } from "@/domains/notifications/notifications.functions";
 import { Mail } from "lucide-react";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/_authenticated/emails")({
   head: () => ({
@@ -82,7 +83,7 @@ function EmailsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-3 text-xs text-muted-foreground">
-                    {new Date(row.created_at).toLocaleString()}
+                    {formatDateTime(row.created_at)}
                   </td>
                 </tr>
               ))}

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { StageBadge } from "@/components/shared/StageBadge";
 import type { AdmissionStage } from "@/domains/admissions/types";
 import { getProgrammeFn } from "@/domains/programmes/programmes.functions";
+import { formatDateTime } from "@/lib/datetime";
 
 export const Route = createFileRoute("/_authenticated/programmes/$programmeId")({
   head: () => ({
@@ -69,7 +70,7 @@ function ProgrammeDetailPage() {
             <dt className="label-caps text-muted-foreground">Opens</dt>
             <dd className="mt-1 text-foreground">
               {programme.applications_open_at
-                ? new Date(programme.applications_open_at).toLocaleString()
+                ? formatDateTime(programme.applications_open_at)
                 : "Always open"}
             </dd>
           </div>
@@ -77,7 +78,7 @@ function ProgrammeDetailPage() {
             <dt className="label-caps text-muted-foreground">Closes</dt>
             <dd className="mt-1 text-foreground">
               {programme.applications_close_at
-                ? new Date(programme.applications_close_at).toLocaleString()
+                ? formatDateTime(programme.applications_close_at)
                 : "No close date"}
             </dd>
           </div>
