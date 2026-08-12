@@ -104,14 +104,16 @@ export function EventForm({ onDone }: { onDone: () => void }) {
         <h4 className="text-sm font-semibold text-foreground">Sessions</h4>
         {sessions.map((s, index) => (
           <div key={index} className="grid gap-3 rounded-xl border border-border p-4 sm:grid-cols-4">
-            <div>
-              <Label className="mb-2 block">Starts</Label>
-              <Input type="datetime-local" value={s.startsAt} onChange={(e) => patch(index, { startsAt: e.target.value })} />
-            </div>
-            <div>
-              <Label className="mb-2 block">Ends</Label>
-              <Input type="datetime-local" value={s.endsAt} onChange={(e) => patch(index, { endsAt: e.target.value })} />
-            </div>
+            <DateTimeField
+              label="Starts"
+              value={s.startsAt}
+              onChange={(v) => patch(index, { startsAt: v })}
+            />
+            <DateTimeField
+              label="Ends"
+              value={s.endsAt}
+              onChange={(v) => patch(index, { endsAt: v })}
+            />
             <div>
               <Label className="mb-2 block">Capacity</Label>
               <Input type="number" value={s.capacity} onChange={(e) => patch(index, { capacity: e.target.value })} />
