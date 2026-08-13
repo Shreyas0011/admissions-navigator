@@ -38,11 +38,11 @@ export function DateTimeField({
           {label}
         </Label>
       )}
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Input
           id={id}
           type="date"
-          className="flex-1"
+          className="min-w-[9.5rem] flex-1"
           value={date}
           onChange={(e) => onChange(joinLocalInput(e.target.value, time || "09:00"))}
         />
@@ -50,7 +50,7 @@ export function DateTimeField({
           value={time || undefined}
           onValueChange={(next) => onChange(joinLocalInput(date, next))}
         >
-          <SelectTrigger className="w-[130px]">
+          <SelectTrigger className="w-[7.5rem] shrink-0">
             <SelectValue placeholder="Time" />
           </SelectTrigger>
           <SelectContent className="max-h-64">
@@ -62,6 +62,7 @@ export function DateTimeField({
           </SelectContent>
         </Select>
       </div>
+
     </div>
   );
 }

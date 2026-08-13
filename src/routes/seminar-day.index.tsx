@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { APP_NAME } from "@/config/constants";
 import { groundLoginFn, listTodaySessionsFn } from "@/domains/attendance/attendance.functions";
+import { GROUND_TOKEN_KEY } from "@/domains/attendance/ground.client";
 import { cn } from "@/lib/utils";
 import { formatTime } from "@/lib/datetime";
 
@@ -46,7 +47,10 @@ function SeminarDayLogin() {
   const login = useMutation({
     mutationFn: () =>
       groundLoginFn({ data: { sessionId: selected!, staffName, password } }),
-    onSuccess: () => navigate({ to: "/seminar-day/console" }),
+    onSuccess: (result) => {
+      localStorage.setItem(GROUND_TOKEN_KEY, result.token);
+      navigate({ to: "/seminar-day/console" });
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 

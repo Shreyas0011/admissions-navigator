@@ -1,7 +1,8 @@
-import { read, utils, write } from "xlsx";
+import { read, utils } from "xlsx";
 
 import { BULK_COLUMNS, BULK_COLUMN_HINTS, SAMPLE_BULK_ROW, bulkRowSchema } from "@/domains/students/bulk.schema";
-import type { BulkRow } from "@/domains/students/bulk.schema";
+import type { BulkColumn, BulkRow } from "@/domains/students/bulk.schema";
+import { leadSourceSchema } from "@/domains/students/schema";
 
 export type ParsedRow = {
   index: number;
@@ -9,6 +10,11 @@ export type ParsedRow = {
   value: BulkRow | null;
   errors: string[];
 };
+
+/** Columns the admin picks from a list rather than typing free text. */
+export const LEAD_SOURCES = leadSourceSchema.options as readonly string[];
+
+const DATA_ROWS = 300;
 
 function download(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -19,28 +25,65 @@ function download(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-/** Template with a header row, a filled example row and a hint row. */
-export function downloadTemplate(format: "csv" | "xlsx") {
-  const rows = [
-    BULK_COLUMNS.map((c) => c),
+function templateRows() {
+  return [
+    BULK_COLUMNS.map((c) => c as string),
     BULK_COLUMNS.map((c) => SAMPLE_BULK_ROW[c]),
     BULK_COLUMNS.map((c) => BULK_COLUMN_HINTS[c]),
   ];
-  const sheet = utils.aoa_to_sheet(rows);
+}
 
-  if (format === "csv") {
-    download(new Blob([utils.sheet_to_csv(sheet)], { type: "text/csv" }), "students-template.csv");
-    return;
+function csvTemplate() {
+  const sheet = utils.aoa_to_sheet(templateRows());
+  download(new Blob([utils.sheet_to_csv(sheet)], { type: "text/csv" }), "students-template.csv");
+}
+
+/**
+ * XLSX template with real dropdowns on the columns that must match configured
+ * values (lead source and programme code), so admins never type them by hand.
+ */
+async function xlsxTemplate(programmeCodes: readonly string[]) {
+  const { Workbook } = await import("exceljs");
+  const book = new Workbook();
+  const sheet = book.addWorksheet("Students");
+  for (const row of templateRows()) sheet.addRow(row);
+  sheet.getRow(1).font = { bold: true };
+  sheet.columns = BULK_COLUMNS.map(() => ({ width: 24 }));
+
+  const lists: Partial<Record<BulkColumn, readonly string[]>> = {
+    lead_source: LEAD_SOURCES,
+    ...(programmeCodes.length > 0 ? { programme_code: programmeCodes } : {}),
+  };
+
+  for (const [column, values] of Object.entries(lists) as [BulkColumn, readonly string[]][]) {
+    const letter = sheet.getColumn(BULK_COLUMNS.indexOf(column) + 1).letter;
+    for (let row = 2; row <= DATA_ROWS + 1; row += 1) {
+      sheet.getCell(`${letter}${row}`).dataValidation = {
+        type: "list",
+        allowBlank: true,
+        formulae: [`"${values.join(",")}"`],
+        showErrorMessage: true,
+        errorTitle: "Pick from the list",
+        error: `Choose one of: ${values.join(", ")}`,
+      };
+    }
   }
-  const book = utils.book_new();
-  utils.book_append_sheet(book, sheet, "Students");
-  const buffer = write(book, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
+
+  const buffer = await book.xlsx.writeBuffer();
   download(
     new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     }),
     "students-template.xlsx",
   );
+}
+
+export async function downloadTemplate(
+  format: "csv" | "xlsx",
+  programmeCodes: readonly string[] = [],
+) {
+  if (format === "csv") return csvTemplate();
+  return xlsxTemplate(programmeCodes);
 }
 
 function normaliseCell(value: unknown): string {
