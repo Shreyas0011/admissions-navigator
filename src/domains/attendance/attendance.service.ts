@@ -13,7 +13,7 @@ import {
   updateGroundPassword,
   type DaySessionRow,
 } from "./attendance.repo";
-import { requireGroundSession, startGroundSession } from "./ground.session.server";
+import { issueGroundToken, requireGroundToken } from "./ground.token.server";
 import type { GroundLoginInput } from "./schema";
 
 function equals(a: string, b: string) {
@@ -55,8 +55,7 @@ export async function groundLogin(input: GroundLoginInput) {
   if (!session.ground_password) throw new Error("No ground password has been set for this seminar");
   if (!equals(input.password, session.ground_password)) throw new Error("Incorrect password");
 
-  await startGroundSession(session.id, input.staffName);
-  return { ok: true as const };
+  return { ok: true as const, token: issueGroundToken(session.id, input.staffName) };
 }
 
 function counts(session: DaySessionRow, registered: number, present: number, walkIns: number) {
@@ -95,8 +94,8 @@ export async function getSessionBoard(sessionId: string) {
   };
 }
 
-export async function groundBoard() {
-  const { sessionId, staffName } = await requireGroundSession();
+export async function groundBoard(token?: string | null) {
+  const { sessionId, staffName } = requireGroundToken(token);
   const board = await getSessionBoard(sessionId);
   return { ...board, staffName };
 }
@@ -108,8 +107,8 @@ export type ScanResult = {
   bookingRef?: string | null;
 };
 
-export async function scanStudent(payload: string): Promise<ScanResult> {
-  const { sessionId } = await requireGroundSession();
+export async function scanStudent(payload: string, token?: string | null): Promise<ScanResult> {
+  const { sessionId } = requireGroundToken(token);
   const parsed = parseStudentQrPayload(payload);
   if (!parsed) return { status: "UNKNOWN", message: "This QR code is not an Admissions OS pass" };
 
@@ -149,8 +148,8 @@ export async function scanStudent(payload: string): Promise<ScanResult> {
   };
 }
 
-export async function markAttendance(studentId: string) {
-  const { sessionId, staffName } = await requireGroundSession();
+export async function markAttendance(studentId: string, token?: string | null) {
+  const { sessionId, staffName } = requireGroundToken(token);
   const session = await selectDaySession(sessionId);
   if (!session) throw new Error("Seminar session not found");
 

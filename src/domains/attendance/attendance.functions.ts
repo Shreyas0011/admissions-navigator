@@ -2,7 +2,13 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-import { groundLoginSchema, groundPasswordSchema, markAttendanceSchema, scanSchema } from "./schema";
+import {
+  groundLoginSchema,
+  groundPasswordSchema,
+  groundTokenSchema,
+  markAttendanceSchema,
+  scanSchema,
+} from "./schema";
 
 /* ---------------- Ground staff (password session, no account) ---------------- */
 
@@ -18,29 +24,25 @@ export const groundLoginFn = createServerFn({ method: "POST" })
     return groundLogin(data);
   });
 
-export const groundLogoutFn = createServerFn({ method: "POST" }).handler(async () => {
-  const { endGroundSession } = await import("./ground.session.server");
-  await endGroundSession();
-  return { ok: true as const };
-});
-
-export const groundBoardFn = createServerFn({ method: "POST" }).handler(async () => {
-  const { groundBoard } = await import("./attendance.service");
-  return groundBoard();
-});
+export const groundBoardFn = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => groundTokenSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { groundBoard } = await import("./attendance.service");
+    return groundBoard(data.token);
+  });
 
 export const groundScanFn = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => scanSchema.parse(input))
   .handler(async ({ data }) => {
     const { scanStudent } = await import("./attendance.service");
-    return scanStudent(data.payload);
+    return scanStudent(data.payload, data.token);
   });
 
 export const groundMarkAttendanceFn = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => markAttendanceSchema.parse(input))
   .handler(async ({ data }) => {
     const { markAttendance } = await import("./attendance.service");
-    return markAttendance(data.studentId);
+    return markAttendance(data.studentId, data.token);
   });
 
 /* ---------------- Admin ---------------- */

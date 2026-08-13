@@ -7,11 +7,17 @@ export const groundLoginSchema = z.object({
 });
 export type GroundLoginInput = z.infer<typeof groundLoginSchema>;
 
+export const groundTokenSchema = z.object({
+  token: z.string().trim().min(10).max(600),
+});
+
 export const scanSchema = z.object({
+  token: z.string().trim().min(10).max(600),
   payload: z.string().trim().min(6).max(400),
 });
 
 export const markAttendanceSchema = z.object({
+  token: z.string().trim().min(10).max(600),
   studentId: z.string().uuid(),
   walkIn: z.boolean().default(false),
 });
