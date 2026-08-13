@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as StudentLoginRouteImport } from './routes/student-login'
+import { Route as XlcheckRouteImport } from './routes/xlcheck'
 import { Route as AuthenticatedCounsellorsRouteImport } from './routes/_authenticated.counsellors'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated.dashboard'
 import { Route as AuthenticatedEmailsRouteImport } from './routes/_authenticated.emails'
@@ -58,6 +59,11 @@ const PortalRoute = PortalRouteImport.update({
 const StudentLoginRoute = StudentLoginRouteImport.update({
   id: '/student-login',
   path: '/student-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const XlcheckRoute = XlcheckRouteImport.update({
+  id: '/xlcheck',
+  path: '/xlcheck',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedCounsellorsRoute =
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
   '/student-login': typeof StudentLoginRoute
+  '/xlcheck': typeof XlcheckRoute
   '/counsellors': typeof AuthenticatedCounsellorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/emails': typeof AuthenticatedEmailsRoute
@@ -203,6 +210,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/student-login': typeof StudentLoginRoute
+  '/xlcheck': typeof XlcheckRoute
   '/counsellors': typeof AuthenticatedCounsellorsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/emails': typeof AuthenticatedEmailsRoute
@@ -232,6 +240,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/portal': typeof PortalRouteWithChildren
   '/student-login': typeof StudentLoginRoute
+  '/xlcheck': typeof XlcheckRoute
   '/_authenticated/counsellors': typeof AuthenticatedCounsellorsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/emails': typeof AuthenticatedEmailsRoute
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/portal'
     | '/student-login'
+    | '/xlcheck'
     | '/counsellors'
     | '/dashboard'
     | '/emails'
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/student-login'
+    | '/xlcheck'
     | '/counsellors'
     | '/dashboard'
     | '/emails'
@@ -315,6 +326,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/portal'
     | '/student-login'
+    | '/xlcheck'
     | '/_authenticated/counsellors'
     | '/_authenticated/dashboard'
     | '/_authenticated/emails'
@@ -344,6 +356,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
   StudentLoginRoute: typeof StudentLoginRoute
+  XlcheckRoute: typeof XlcheckRoute
   SeminarDayConsoleRoute: typeof SeminarDayConsoleRoute
   SeminarDayIndexRoute: typeof SeminarDayIndexRoute
 }
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       path: '/student-login'
       fullPath: '/student-login'
       preLoaderRoute: typeof StudentLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/xlcheck': {
+      id: '/xlcheck'
+      path: '/xlcheck'
+      fullPath: '/xlcheck'
+      preLoaderRoute: typeof XlcheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/counsellors': {
@@ -599,6 +619,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
   StudentLoginRoute: StudentLoginRoute,
+  XlcheckRoute: XlcheckRoute,
   SeminarDayConsoleRoute: SeminarDayConsoleRoute,
   SeminarDayIndexRoute: SeminarDayIndexRoute,
 }
