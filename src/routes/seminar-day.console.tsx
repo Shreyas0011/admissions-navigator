@@ -10,10 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   groundBoardFn,
-  groundLogoutFn,
   groundMarkAttendanceFn,
   groundScanFn,
 } from "@/domains/attendance/attendance.functions";
+import { GROUND_TOKEN_KEY } from "@/domains/attendance/ground.client";
 import { formatTime } from "@/lib/datetime";
 
 type Scan = Awaited<ReturnType<typeof groundScanFn>>;
@@ -40,14 +40,17 @@ function ConsolePage() {
   const [scanning, setScanning] = useState(false);
   const [scan, setScan] = useState<Scan | null>(null);
 
+  const token = typeof window === "undefined" ? "" : localStorage.getItem(GROUND_TOKEN_KEY) ?? "";
+
   const board = useQuery({
-    queryKey: ["ground", "board"],
-    queryFn: () => groundBoardFn(),
+    queryKey: ["ground", "board", token],
+    queryFn: () => groundBoardFn({ data: { token } }),
+    enabled: token.length > 0,
     retry: false,
   });
 
   const resolve = useMutation({
-    mutationFn: (payload: string) => groundScanFn({ data: { payload } }),
+    mutationFn: (payload: string) => groundScanFn({ data: { token, payload } }),
     onSuccess: (result) => {
       setScan(result);
       setScanning(false);
@@ -57,7 +60,7 @@ function ConsolePage() {
 
   const mark = useMutation({
     mutationFn: (studentId: string) =>
-      groundMarkAttendanceFn({ data: { studentId, walkIn: false } }),
+      groundMarkAttendanceFn({ data: { token, studentId, walkIn: false } }),
     onSuccess: (result) => {
       toast.success(result.walkIn ? "Walk-in attendance recorded" : "Attendance recorded");
       setScan(null);
@@ -66,11 +69,19 @@ function ConsolePage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  async function signOut() {
-    await groundLogoutFn();
+  function signOut() {
+    localStorage.removeItem(GROUND_TOKEN_KEY);
     navigate({ to: "/seminar-day" });
   }
 
+  if (!token) {
+    return (
+      <div className="mx-auto max-w-md space-y-4 px-6 py-16 text-center">
+        <p className="text-sm text-muted-foreground">Sign in to a seminar to open the console.</p>
+        <Button onClick={() => navigate({ to: "/seminar-day" })}>Back to sign in</Button>
+      </div>
+    );
+  }
   if (board.isLoading) return <Skeleton className="m-6 h-96 rounded-2xl" />;
   if (board.error) {
     return (
