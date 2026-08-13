@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, Download, FileSpreadsheet, Loader2, Upload } from "lucide-react";
 import { toast } from "sonner";
 
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { downloadTemplate, parseUpload, type ParsedRow } from "@/lib/bulk-upload";
 import { bulkImportStudents } from "@/domains/students/students.functions";
+import { listOpenProgrammesFn } from "@/domains/programmes/programmes.functions";
 import { BulkResultTable } from "./BulkResultTable";
 
 type Result = Awaited<ReturnType<typeof bulkImportStudents>>;
@@ -17,6 +18,12 @@ export function BulkUploadPanel({ onImported }: { onImported?: () => void }) {
   const [rows, setRows] = useState<ParsedRow[]>([]);
   const [fileName, setFileName] = useState("");
   const [results, setResults] = useState<Result | null>(null);
+
+  const programmes = useQuery({
+    queryKey: ["programmes", "open"],
+    queryFn: () => listOpenProgrammesFn(),
+  });
+  const programmeCodes = (programmes.data ?? []).map((p) => p.code);
 
   const valid = rows.filter((r) => r.value);
   const invalid = rows.filter((r) => !r.value);
@@ -57,15 +64,16 @@ export function BulkUploadPanel({ onImported }: { onImported?: () => void }) {
       <div className="rounded-xl border border-border p-4">
         <p className="text-sm font-medium text-foreground">1 · Download the template</p>
         <p className="mt-1 text-xs text-muted-foreground">
-          Fill it in outside the platform. Do not add a password column — the system generates one
-          for every student and forces a reset on first login.
+          Fill it in outside the platform. The XLSX template has dropdowns for programme code and
+          lead source, so those cells can only hold configured values. Do not add a password column
+          — the system generates one for every student and forces a reset on first login.
         </p>
         <div className="mt-3 flex gap-2">
           <Button size="sm" variant="outline" onClick={() => downloadTemplate("csv")}>
             <Download className="size-4" /> CSV template
           </Button>
-          <Button size="sm" variant="outline" onClick={() => downloadTemplate("xlsx")}>
-            <Download className="size-4" /> XLSX template
+          <Button size="sm" variant="outline" onClick={() => downloadTemplate("xlsx", programmeCodes)}>
+            <Download className="size-4" /> XLSX template (with dropdowns)
           </Button>
         </div>
       </div>
