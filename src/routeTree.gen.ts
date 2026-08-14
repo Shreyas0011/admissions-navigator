@@ -38,6 +38,7 @@ import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
 import { Route as AuthenticatedSeminarsIndexRouteImport } from './routes/_authenticated.seminars.index'
 import { Route as AuthenticatedSeminarsEventIdRouteImport } from './routes/_authenticated.seminars.$eventId'
+import { Route as PortalHallTicketBookingIdRouteImport } from './routes/portal.hall-ticket.$bookingId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -189,6 +190,12 @@ const AuthenticatedSeminarsEventIdRoute =
     path: '/seminars/$eventId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const PortalHallTicketBookingIdRoute =
+  PortalHallTicketBookingIdRouteImport.update({
+    id: '/hall-ticket/$bookingId',
+    path: '/hall-ticket/$bookingId',
+    getParentRoute: () => PortalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -217,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -246,6 +254,7 @@ export interface FileRoutesByTo {
   '/seminar-day': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/programmes': typeof AuthenticatedProgrammesIndexRoute
   '/seminars': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -278,6 +287,7 @@ export interface FileRoutesById {
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/_authenticated/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/_authenticated/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/_authenticated/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -310,6 +320,7 @@ export interface FileRouteTypes {
     | '/seminar-day/'
     | '/programmes/$programmeId'
     | '/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/programmes/'
     | '/seminars/'
   fileRoutesByTo: FileRoutesByTo
@@ -339,6 +350,7 @@ export interface FileRouteTypes {
     | '/seminar-day'
     | '/programmes/$programmeId'
     | '/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/programmes'
     | '/seminars'
   id:
@@ -370,6 +382,7 @@ export interface FileRouteTypes {
     | '/seminar-day/'
     | '/_authenticated/programmes/$programmeId'
     | '/_authenticated/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/_authenticated/programmes/'
     | '/_authenticated/seminars/'
   fileRoutesById: FileRoutesById
@@ -591,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSeminarsEventIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/portal/hall-ticket/$bookingId': {
+      id: '/portal/hall-ticket/$bookingId'
+      path: '/hall-ticket/$bookingId'
+      fullPath: '/portal/hall-ticket/$bookingId'
+      preLoaderRoute: typeof PortalHallTicketBookingIdRouteImport
+      parentRoute: typeof PortalRoute
+    }
   }
 }
 
@@ -639,6 +659,7 @@ interface PortalRouteChildren {
   PortalQrRoute: typeof PortalQrRoute
   PortalSeminarsRoute: typeof PortalSeminarsRoute
   PortalIndexRoute: typeof PortalIndexRoute
+  PortalHallTicketBookingIdRoute: typeof PortalHallTicketBookingIdRoute
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
@@ -649,6 +670,7 @@ const PortalRouteChildren: PortalRouteChildren = {
   PortalQrRoute: PortalQrRoute,
   PortalSeminarsRoute: PortalSeminarsRoute,
   PortalIndexRoute: PortalIndexRoute,
+  PortalHallTicketBookingIdRoute: PortalHallTicketBookingIdRoute,
 }
 
 const PortalRouteWithChildren =
