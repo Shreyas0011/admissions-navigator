@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
 import {
   completeFirstLoginResetFn,
   getMyCounsellorFn,
@@ -26,7 +27,12 @@ export function FirstLoginGate({ children }: { children: React.ReactNode }) {
   });
 
   const mutation = useMutation({
-    mutationFn: () => completeFirstLoginResetFn({ data: { password, confirmPassword } }),
+    mutationFn: async () => {
+      if (password !== confirmPassword) throw new Error("Passwords do not match");
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw new Error(error.message);
+      return completeFirstLoginResetFn({ data: { password, confirmPassword } });
+    },
     onSuccess: () => {
       toast.success("Password updated — welcome aboard");
       queryClient.invalidateQueries({ queryKey: ["my-counsellor"] });

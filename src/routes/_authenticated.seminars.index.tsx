@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, MapPin, Plus, Users, Wand2 } from "lucide-react";
+import { CalendarClock, MapPin, Plus, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -11,7 +11,6 @@ import { Progress } from "@/components/ui/progress";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { EventForm } from "@/components/events/EventForm";
 import {
-  autoAllocateFn,
   listEventsFn,
   publishEventFn,
 } from "@/domains/events/events.functions";
@@ -50,14 +49,7 @@ function SeminarsPage() {
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const allocate = useMutation({
-    mutationFn: (id: string) => autoAllocateFn({ data: { id } }),
-    onSuccess: (result) => {
-      toast.success(result.message);
-      refresh();
-    },
-    onError: (error: Error) => toast.error(error.message),
-  });
+  const seminars = (data ?? []).filter((event) => event.event_type !== "EXAM");
 
   return (
     <div className="space-y-8">
@@ -89,7 +81,7 @@ function SeminarsPage() {
         </div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {(data ?? []).map((event) => {
+           {seminars.map((event) => {
             const fill = Math.round((event.booked / Math.max(event.capacity, 1)) * 100);
             return (
               <article key={event.id} className="surface-card rounded-2xl p-6">
@@ -142,14 +134,6 @@ function SeminarsPage() {
                     onClick={() => publish.mutate({ id: event.id, isOpen: !event.is_open })}
                   >
                     {event.is_open ? "Unpublish" : "Publish"}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => allocate.mutate(event.id)}
-                    disabled={allocate.isPending}
-                  >
-                    <Wand2 className="mr-1 size-4" /> Auto-allocate
                   </Button>
                   <Button size="sm" variant="ghost" asChild>
                     <Link to="/seminars/$eventId" params={{ eventId: event.id }}>
