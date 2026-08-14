@@ -43,7 +43,14 @@ export async function updateMyCounsellorProfile(userId: string, input: Counsello
 /** First login: set the new password with admin rights, then clear the gate. */
 export async function completeFirstLoginReset(userId: string, password: string) {
   const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password });
-  if (authError) throw new Error(authError.message);
+  if (authError) {
+    const weak = /weak|easy to guess|pwned|breach/i.test(authError.message);
+    throw new Error(
+      weak
+        ? "That password appears in known data breaches. Pick a stronger, unique password."
+        : authError.message,
+    );
+  }
 
   const { data, error: flagError } = await supabaseAdmin
     .from("counsellors")
