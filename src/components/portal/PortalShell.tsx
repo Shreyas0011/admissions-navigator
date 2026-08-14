@@ -12,6 +12,7 @@ const TABS = [
   { to: "/portal", label: "My application" },
   { to: "/portal/progress", label: "Progress" },
   { to: "/portal/counsellor", label: "Counsellor" },
+  { to: "/portal/chat", label: "Chat" },
   { to: "/portal/seminars", label: "Seminars" },
   { to: "/portal/exams", label: "Exams" },
   { to: "/portal/qr", label: "My QR" },

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 import { DateTimeField } from "@/components/shared/DateTimeField";
 import { saveEventFn, saveSessionFn } from "@/domains/events/events.functions";
+import { saveExamConfigFn } from "@/domains/exams/exams.functions";
+import { Textarea } from "@/components/ui/textarea";
 import { listProgrammesFn, listVenuesFn } from "@/domains/programmes/programmes.functions";
 import { STAGES } from "@/config/constants";
 
@@ -24,13 +26,17 @@ const ANY = "__any__";
 const emptySession = (): SessionDraft => ({ startsAt: "", endsAt: "", capacity: "40", venueId: ANY });
 
 /** Event builder: event details -> sessions & venues -> strategy -> publish. */
-export function EventForm({ onDone }: { onDone: () => void }) {
+export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedType?: "EXAM" }) {
   const queryClient = useQueryClient();
   const { data: programmes } = useQuery({ queryKey: ["programmes"], queryFn: () => listProgrammesFn() });
   const { data: venues } = useQuery({ queryKey: ["venues"], queryFn: () => listVenuesFn() });
 
   const [title, setTitle] = useState("");
-  const [eventType, setEventType] = useState("WOC");
+  const [eventType, setEventType] = useState(lockedType ?? "WOC");
+  const [durationMinutes, setDurationMinutes] = useState("90");
+  const [instructions, setInstructions] = useState(
+    "Carry your Aadhaar card for identity verification along with a printed copy of this hall ticket. Reporting time is 30 minutes before the exam start time.",
+  );
   const [programmeId, setProgrammeId] = useState(ANY);
   const [targetStage, setTargetStage] = useState(ANY);
   const [strategy, setStrategy] = useState("LEAST_FILLED");
@@ -68,11 +74,17 @@ export function EventForm({ onDone }: { onDone: () => void }) {
           },
         });
       }
+      if (eventType === "EXAM") {
+        await saveExamConfigFn({
+          data: { eventId, durationMinutes: Number(durationMinutes), instructions },
+        });
+      }
       return eventId;
     },
     onSuccess: () => {
       toast.success("Event created");
       queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ["exam-events"] });
       onDone();
     },
     onError: (e: Error) => toast.error(e.message),
@@ -90,7 +102,7 @@ export function EventForm({ onDone }: { onDone: () => void }) {
           <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="WOC Orientation" />
         </div>
         <Picker label="Type" value={eventType} onChange={setEventType}
-          options={["WOC", "ACC", "EXAM", "OTHER"].map((v) => ({ value: v, label: v }))} />
+          options={(lockedType ? [lockedType] : ["WOC", "ACC", "EXAM", "OTHER"]).map((v) => ({ value: v, label: v }))} />
         <Picker label="Programme" value={programmeId} onChange={setProgrammeId}
           options={[{ value: ANY, label: "All programmes" }, ...(programmes ?? []).map((p) => ({ value: p.id, label: p.name }))]} />
         <Picker label="Target stage" value={targetStage} onChange={setTargetStage}
@@ -100,6 +112,27 @@ export function EventForm({ onDone }: { onDone: () => void }) {
         <Picker label="Publish now" value={publish ? "yes" : "no"} onChange={(v) => setPublish(v === "yes")}
           options={[{ value: "yes", label: "Publish (open self-registration)" }, { value: "no", label: "Keep as draft" }]} />
       </div>
+
+      {eventType === "EXAM" && (
+        <div className="grid gap-4 rounded-xl border border-border p-4 sm:grid-cols-2">
+          <div>
+            <Label className="mb-2 block">Exam duration (minutes)</Label>
+            <Input
+              type="number"
+              value={durationMinutes}
+              onChange={(e) => setDurationMinutes(e.target.value)}
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <Label className="mb-2 block">Hall-ticket instructions</Label>
+            <Textarea
+              rows={3}
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-foreground">Sessions</h4>

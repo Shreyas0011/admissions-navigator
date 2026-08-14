@@ -32,6 +32,8 @@ function PortalSeminars() {
     queryFn: () => listMySessionsFn(),
   });
 
+  const events = (data ?? []).filter((e) => e.eventType !== "EXAM");
+
   const register = useMutation({
     mutationFn: (sessionId: string) => registerForSessionFn({ data: { sessionId } }),
     onSuccess: (booking) => {
@@ -55,14 +57,14 @@ function PortalSeminars() {
 
       {isLoading ? (
         <Skeleton className="h-64 rounded-2xl" />
-      ) : (data ?? []).length === 0 ? (
+      ) : events.length === 0 ? (
         <EmptyState
           title="Nothing to register for yet"
           description="Sessions appear here once your counsellor moves you to the right stage and an event is published for your programme."
         />
       ) : (
         <div className="space-y-4">
-          {(data ?? []).map((event) => (
+          {events.map((event) => (
             <article key={event.id} className="surface-card rounded-2xl p-6">
               <div className="flex items-start justify-between gap-4">
                 <div>

@@ -40,7 +40,9 @@ function csvTemplate() {
 
 /**
  * XLSX template with real dropdowns on the columns that must match configured
- * values (lead source and programme code), so admins never type them by hand.
+ * values. The allowed values live on a hidden "Lists" sheet and are referenced
+ * by range: inline `"a,b,c"` formulae are capped at 255 characters, which the
+ * programme list exceeds, and Excel then silently drops the validation.
  */
 async function xlsxTemplate(programmeCodes: readonly string[]) {
   const { Workbook } = await import("exceljs");
@@ -50,18 +52,28 @@ async function xlsxTemplate(programmeCodes: readonly string[]) {
   sheet.getRow(1).font = { bold: true };
   sheet.columns = BULK_COLUMNS.map(() => ({ width: 24 }));
 
+  const listSheet = book.addWorksheet("Lists", { state: "veryHidden" });
+
   const lists: Partial<Record<BulkColumn, readonly string[]>> = {
     lead_source: LEAD_SOURCES,
     ...(programmeCodes.length > 0 ? { programme_code: programmeCodes } : {}),
   };
 
+  let listColumn = 0;
   for (const [column, values] of Object.entries(lists) as [BulkColumn, readonly string[]][]) {
+    listColumn += 1;
+    const listLetter = listSheet.getColumn(listColumn).letter;
+    values.forEach((value, i) => {
+      listSheet.getCell(`${listLetter}${i + 1}`).value = value;
+    });
+    const range = `Lists!$${listLetter}$1:$${listLetter}$${values.length}`;
+
     const letter = sheet.getColumn(BULK_COLUMNS.indexOf(column) + 1).letter;
     for (let row = 2; row <= DATA_ROWS + 1; row += 1) {
       sheet.getCell(`${letter}${row}`).dataValidation = {
         type: "list",
         allowBlank: true,
-        formulae: [`"${values.join(",")}"`],
+        formulae: [range],
         showErrorMessage: true,
         errorTitle: "Pick from the list",
         error: `Choose one of: ${values.join(", ")}`,
@@ -126,5 +138,6 @@ export async function parseUpload(file: File): Promise<ParsedRow[]> {
       };
     })
     .filter((row) => Object.values(row.raw).some((v) => v !== ""))
-    .filter((row) => row.raw["full_name"] !== BULK_COLUMN_HINTS.full_name);
+    .filter((row) => row.raw["full_name"] !== BULK_COLUMN_HINTS.full_name)
+    .filter((row) => row.raw["email"] !== SAMPLE_BULK_ROW.email);
 }

@@ -23,7 +23,10 @@ import { Route as AuthenticatedMyLeadsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated.reports'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated.settings'
 import { Route as AuthenticatedStudentsRouteImport } from './routes/_authenticated.students'
+import { Route as ExamDayIndexRouteImport } from './routes/exam-day.index'
+import { Route as ExamDayConsoleRouteImport } from './routes/exam-day.console'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as PortalChatRouteImport } from './routes/portal.chat'
 import { Route as PortalCounsellorRouteImport } from './routes/portal.counsellor'
 import { Route as PortalExamsRouteImport } from './routes/portal.exams'
 import { Route as PortalProgressRouteImport } from './routes/portal.progress'
@@ -35,6 +38,7 @@ import { Route as AuthenticatedProgrammesIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedProgrammesProgrammeIdRouteImport } from './routes/_authenticated.programmes.$programmeId'
 import { Route as AuthenticatedSeminarsIndexRouteImport } from './routes/_authenticated.seminars.index'
 import { Route as AuthenticatedSeminarsEventIdRouteImport } from './routes/_authenticated.seminars.$eventId'
+import { Route as PortalHallTicketBookingIdRouteImport } from './routes/portal.hall-ticket.$bookingId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -107,9 +111,24 @@ const AuthenticatedStudentsRoute = AuthenticatedStudentsRouteImport.update({
   path: '/students',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const ExamDayIndexRoute = ExamDayIndexRouteImport.update({
+  id: '/exam-day/',
+  path: '/exam-day/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamDayConsoleRoute = ExamDayConsoleRouteImport.update({
+  id: '/exam-day/console',
+  path: '/exam-day/console',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalChatRoute = PortalChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => PortalRoute,
 } as any)
 const PortalCounsellorRoute = PortalCounsellorRouteImport.update({
@@ -171,6 +190,12 @@ const AuthenticatedSeminarsEventIdRoute =
     path: '/seminars/$eventId',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const PortalHallTicketBookingIdRoute =
+  PortalHallTicketBookingIdRouteImport.update({
+    id: '/hall-ticket/$bookingId',
+    path: '/hall-ticket/$bookingId',
+    getParentRoute: () => PortalRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -186,16 +211,20 @@ export interface FileRoutesByFullPath {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
+  '/exam-day/console': typeof ExamDayConsoleRoute
+  '/portal/chat': typeof PortalChatRoute
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/seminar-day/console': typeof SeminarDayConsoleRoute
+  '/exam-day/': typeof ExamDayIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -212,16 +241,20 @@ export interface FileRoutesByTo {
   '/reports': typeof AuthenticatedReportsRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/students': typeof AuthenticatedStudentsRoute
+  '/exam-day/console': typeof ExamDayConsoleRoute
+  '/portal/chat': typeof PortalChatRoute
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/seminar-day/console': typeof SeminarDayConsoleRoute
+  '/exam-day': typeof ExamDayIndexRoute
   '/portal': typeof PortalIndexRoute
   '/seminar-day': typeof SeminarDayIndexRoute
   '/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/programmes': typeof AuthenticatedProgrammesIndexRoute
   '/seminars': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -241,16 +274,20 @@ export interface FileRoutesById {
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/students': typeof AuthenticatedStudentsRoute
+  '/exam-day/console': typeof ExamDayConsoleRoute
+  '/portal/chat': typeof PortalChatRoute
   '/portal/counsellor': typeof PortalCounsellorRoute
   '/portal/exams': typeof PortalExamsRoute
   '/portal/progress': typeof PortalProgressRoute
   '/portal/qr': typeof PortalQrRoute
   '/portal/seminars': typeof PortalSeminarsRoute
   '/seminar-day/console': typeof SeminarDayConsoleRoute
+  '/exam-day/': typeof ExamDayIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/seminar-day/': typeof SeminarDayIndexRoute
   '/_authenticated/programmes/$programmeId': typeof AuthenticatedProgrammesProgrammeIdRoute
   '/_authenticated/seminars/$eventId': typeof AuthenticatedSeminarsEventIdRoute
+  '/portal/hall-ticket/$bookingId': typeof PortalHallTicketBookingIdRoute
   '/_authenticated/programmes/': typeof AuthenticatedProgrammesIndexRoute
   '/_authenticated/seminars/': typeof AuthenticatedSeminarsIndexRoute
 }
@@ -270,16 +307,20 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/students'
+    | '/exam-day/console'
+    | '/portal/chat'
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
     | '/seminar-day/console'
+    | '/exam-day/'
     | '/portal/'
     | '/seminar-day/'
     | '/programmes/$programmeId'
     | '/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/programmes/'
     | '/seminars/'
   fileRoutesByTo: FileRoutesByTo
@@ -296,16 +337,20 @@ export interface FileRouteTypes {
     | '/reports'
     | '/settings'
     | '/students'
+    | '/exam-day/console'
+    | '/portal/chat'
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
     | '/seminar-day/console'
+    | '/exam-day'
     | '/portal'
     | '/seminar-day'
     | '/programmes/$programmeId'
     | '/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/programmes'
     | '/seminars'
   id:
@@ -324,16 +369,20 @@ export interface FileRouteTypes {
     | '/_authenticated/reports'
     | '/_authenticated/settings'
     | '/_authenticated/students'
+    | '/exam-day/console'
+    | '/portal/chat'
     | '/portal/counsellor'
     | '/portal/exams'
     | '/portal/progress'
     | '/portal/qr'
     | '/portal/seminars'
     | '/seminar-day/console'
+    | '/exam-day/'
     | '/portal/'
     | '/seminar-day/'
     | '/_authenticated/programmes/$programmeId'
     | '/_authenticated/seminars/$eventId'
+    | '/portal/hall-ticket/$bookingId'
     | '/_authenticated/programmes/'
     | '/_authenticated/seminars/'
   fileRoutesById: FileRoutesById
@@ -344,7 +393,9 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PortalRoute: typeof PortalRouteWithChildren
   StudentLoginRoute: typeof StudentLoginRoute
+  ExamDayConsoleRoute: typeof ExamDayConsoleRoute
   SeminarDayConsoleRoute: typeof SeminarDayConsoleRoute
+  ExamDayIndexRoute: typeof ExamDayIndexRoute
   SeminarDayIndexRoute: typeof SeminarDayIndexRoute
 }
 
@@ -448,11 +499,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/exam-day/': {
+      id: '/exam-day/'
+      path: '/exam-day'
+      fullPath: '/exam-day/'
+      preLoaderRoute: typeof ExamDayIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exam-day/console': {
+      id: '/exam-day/console'
+      path: '/exam-day/console'
+      fullPath: '/exam-day/console'
+      preLoaderRoute: typeof ExamDayConsoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/': {
       id: '/portal/'
       path: '/'
       fullPath: '/portal/'
       preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/chat': {
+      id: '/portal/chat'
+      path: '/chat'
+      fullPath: '/portal/chat'
+      preLoaderRoute: typeof PortalChatRouteImport
       parentRoute: typeof PortalRoute
     }
     '/portal/counsellor': {
@@ -532,6 +604,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSeminarsEventIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/portal/hall-ticket/$bookingId': {
+      id: '/portal/hall-ticket/$bookingId'
+      path: '/hall-ticket/$bookingId'
+      fullPath: '/portal/hall-ticket/$bookingId'
+      preLoaderRoute: typeof PortalHallTicketBookingIdRouteImport
+      parentRoute: typeof PortalRoute
+    }
   }
 }
 
@@ -573,21 +652,25 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 )
 
 interface PortalRouteChildren {
+  PortalChatRoute: typeof PortalChatRoute
   PortalCounsellorRoute: typeof PortalCounsellorRoute
   PortalExamsRoute: typeof PortalExamsRoute
   PortalProgressRoute: typeof PortalProgressRoute
   PortalQrRoute: typeof PortalQrRoute
   PortalSeminarsRoute: typeof PortalSeminarsRoute
   PortalIndexRoute: typeof PortalIndexRoute
+  PortalHallTicketBookingIdRoute: typeof PortalHallTicketBookingIdRoute
 }
 
 const PortalRouteChildren: PortalRouteChildren = {
+  PortalChatRoute: PortalChatRoute,
   PortalCounsellorRoute: PortalCounsellorRoute,
   PortalExamsRoute: PortalExamsRoute,
   PortalProgressRoute: PortalProgressRoute,
   PortalQrRoute: PortalQrRoute,
   PortalSeminarsRoute: PortalSeminarsRoute,
   PortalIndexRoute: PortalIndexRoute,
+  PortalHallTicketBookingIdRoute: PortalHallTicketBookingIdRoute,
 }
 
 const PortalRouteWithChildren =
@@ -599,7 +682,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PortalRoute: PortalRouteWithChildren,
   StudentLoginRoute: StudentLoginRoute,
+  ExamDayConsoleRoute: ExamDayConsoleRoute,
   SeminarDayConsoleRoute: SeminarDayConsoleRoute,
+  ExamDayIndexRoute: ExamDayIndexRoute,
   SeminarDayIndexRoute: SeminarDayIndexRoute,
 }
 export const routeTree = rootRouteImport
