@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Printer } from "lucide-react";
+import { Download, Printer } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getHallTicketFn } from "@/domains/exams/exams.functions";
 import { formatDateTime } from "@/lib/datetime";
+import { downloadHallTicketPdf } from "@/lib/hall-ticket-pdf";
 
 export const Route = createFileRoute("/portal/hall-ticket/$bookingId")({
   head: () => ({
@@ -42,9 +43,14 @@ function HallTicketPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between print:hidden">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Hall ticket</h1>
-        <Button onClick={() => window.print()}>
-          <Printer className="mr-1 size-4" /> Download / print PDF
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => window.print()}>
+            <Printer className="mr-1 size-4" /> Print
+          </Button>
+          <Button onClick={() => downloadHallTicketPdf(data)}>
+            <Download className="mr-1 size-4" /> Download PDF
+          </Button>
+        </div>
       </div>
 
       <article className="surface-card space-y-6 rounded-2xl border border-border p-8">

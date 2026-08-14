@@ -39,7 +39,6 @@ export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedTy
   );
   const [programmeId, setProgrammeId] = useState(ANY);
   const [targetStage, setTargetStage] = useState(ANY);
-  const [strategy, setStrategy] = useState("LEAST_FILLED");
   const [publish, setPublish] = useState(true);
   const [sessions, setSessions] = useState<SessionDraft[]>([emptySession()]);
 
@@ -51,7 +50,7 @@ export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedTy
           eventType: eventType as never,
           programmeId: programmeId === ANY ? null : programmeId,
           targetStage: targetStage === ANY ? null : (targetStage as never),
-          allocationStrategy: strategy as never,
+           allocationStrategy: "MANUAL",
           autoApprove: true,
           allowCancellation: true,
           cancellationCutoffHours: 24,
@@ -107,8 +106,6 @@ export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedTy
           options={[{ value: ANY, label: "All programmes" }, ...(programmes ?? []).map((p) => ({ value: p.id, label: p.name }))]} />
         <Picker label="Target stage" value={targetStage} onChange={setTargetStage}
           options={[{ value: ANY, label: "Any stage" }, ...STAGES.map((s) => ({ value: s.value, label: s.label }))]} />
-        <Picker label="Allocation strategy" value={strategy} onChange={setStrategy}
-          options={["FIRST_AVAILABLE", "LEAST_FILLED", "ROUND_ROBIN", "MANUAL"].map((v) => ({ value: v, label: v.replace(/_/g, " ") }))} />
         <Picker label="Publish now" value={publish ? "yes" : "no"} onChange={(v) => setPublish(v === "yes")}
           options={[{ value: "yes", label: "Publish (open self-registration)" }, { value: "no", label: "Keep as draft" }]} />
       </div>
@@ -153,7 +150,7 @@ export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedTy
               <Input type="number" value={s.capacity} onChange={(e) => patch(index, { capacity: e.target.value })} />
             </div>
             <Picker label="Venue" value={s.venueId} onChange={(v) => patch(index, { venueId: v })}
-              options={[{ value: ANY, label: "Venue TBC" }, ...(venues ?? []).map((v) => ({ value: v.id, label: `${v.name} (${v.capacity})` }))]} />
+               options={[...(venues ?? []).map((v) => ({ value: v.id, label: `${v.name} (${v.capacity})` }))]} />
           </div>
         ))}
         <Button variant="outline" size="sm" onClick={() => setSessions((p) => [...p, emptySession()])}>
@@ -163,7 +160,11 @@ export function EventForm({ onDone, lockedType }: { onDone: () => void; lockedTy
 
       <Button
         className="h-11 w-full"
-        disabled={title.trim().length < 3 || create.isPending}
+         disabled={
+           title.trim().length < 3 ||
+           create.isPending ||
+           sessions.some((session) => !session.startsAt || !session.endsAt || session.venueId === ANY)
+         }
         onClick={() => create.mutate()}
       >
         {create.isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
