@@ -8,14 +8,17 @@ import {
   groundTokenSchema,
   markAttendanceSchema,
   scanSchema,
+  todaySessionsSchema,
 } from "./schema";
 
 /* ---------------- Ground staff (password session, no account) ---------------- */
 
-export const listTodaySessionsFn = createServerFn({ method: "POST" }).handler(async () => {
-  const { listTodaySessions } = await import("./attendance.service");
-  return listTodaySessions();
-});
+export const listTodaySessionsFn = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => todaySessionsSchema.parse(input ?? {}))
+  .handler(async ({ data }) => {
+    const { listTodaySessions } = await import("./attendance.service");
+    return listTodaySessions(data.purpose);
+  });
 
 export const groundLoginFn = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => groundLoginSchema.parse(input))
@@ -43,6 +46,14 @@ export const groundMarkAttendanceFn = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { markAttendance } = await import("./attendance.service");
     return markAttendance(data.studentId, data.token);
+  });
+
+export const groundSignOutFn = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => groundTokenSchema.parse(input))
+  .handler(async ({ data }) => {
+    const { revokeGroundAccess } = await import("./ground.access.server");
+    await revokeGroundAccess(data.token);
+    return { ok: true as const };
   });
 
 /* ---------------- Admin ---------------- */

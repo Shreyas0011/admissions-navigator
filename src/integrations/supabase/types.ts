@@ -649,6 +649,41 @@ export type Database = {
           },
         ]
       }
+      exam_configs: {
+        Row: {
+          created_at: string
+          duration_minutes: number
+          event_id: string
+          id: string
+          instructions: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number
+          event_id: string
+          id?: string
+          instructions?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number
+          event_id?: string
+          id?: string
+          instructions?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_configs_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: true
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exam_rooms: {
         Row: {
           capacity: number
@@ -771,37 +806,108 @@ export type Database = {
           },
         ]
       }
+      ground_access_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          purpose: string
+          session_id: string
+          staff_name: string
+          token_hash: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          purpose?: string
+          session_id: string
+          staff_name: string
+          token_hash: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          purpose?: string
+          session_id?: string
+          staff_name?: string
+          token_hash?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ground_access_sessions_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hall_tickets: {
         Row: {
-          exam_id: string
+          booking_id: string | null
+          event_id: string | null
+          exam_id: string | null
           id: string
           issued_at: string
           qr_payload: string
+          session_id: string | null
           student_id: string
           ticket_number: string
         }
         Insert: {
-          exam_id: string
+          booking_id?: string | null
+          event_id?: string | null
+          exam_id?: string | null
           id?: string
           issued_at?: string
           qr_payload: string
+          session_id?: string | null
           student_id: string
           ticket_number: string
         }
         Update: {
-          exam_id?: string
+          booking_id?: string | null
+          event_id?: string | null
+          exam_id?: string | null
           id?: string
           issued_at?: string
           qr_payload?: string
+          session_id?: string | null
           student_id?: string
           ticket_number?: string
         }
         Relationships: [
           {
+            foreignKeyName: "hall_tickets_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "seminar_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hall_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "hall_tickets_exam_id_fkey"
             columns: ["exam_id"]
             isOneToOne: false
             referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "hall_tickets_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "event_sessions"
             referencedColumns: ["id"]
           },
           {
@@ -1045,6 +1151,57 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "student_events_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_messages: {
+        Row: {
+          body: string
+          counsellor_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_type: string
+          sender_user_id: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          counsellor_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_type: string
+          sender_user_id: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          counsellor_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_type?: string
+          sender_user_id?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_messages_counsellor_id_fkey"
+            columns: ["counsellor_id"]
+            isOneToOne: false
+            referencedRelation: "counsellors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_messages_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
             referencedRelation: "students"

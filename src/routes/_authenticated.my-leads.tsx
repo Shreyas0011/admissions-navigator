@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Phone } from "lucide-react";
+import { MessageSquare, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/shared/PageHeader";
@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { listMyLeadsFn } from "@/domains/counsellors/counsellors.functions";
+import { listChatUnreadFn } from "@/domains/chat/chat.functions";
+import { ChatThread } from "@/components/chat/ChatThread";
 import { logStudentCall, moveStudentStage } from "@/domains/students/students.functions";
 import { nextStages, type AdmissionStage } from "@/domains/admissions/types";
 import { STAGE_MAP } from "@/config/constants";
@@ -48,11 +50,17 @@ export const Route = createFileRoute("/_authenticated/my-leads")({
 function MyLeadsPage() {
   const queryClient = useQueryClient();
   const [callFor, setCallFor] = useState<string | null>(null);
+  const [chatWith, setChatWith] = useState<{ id: string; name: string } | null>(null);
   const [outcome, setOutcome] = useState<string>("CONNECTED");
   const [notes, setNotes] = useState("");
   const [calledAt, setCalledAt] = useState(() => localNow());
 
   const { data, isLoading } = useQuery({ queryKey: ["my-leads"], queryFn: () => listMyLeadsFn() });
+  const unread = useQuery({
+    queryKey: ["chat", "unread"],
+    queryFn: () => listChatUnreadFn(),
+    refetchInterval: 30000,
+  });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["my-leads"] });
 
   const log = useMutation({
@@ -119,6 +127,18 @@ function MyLeadsPage() {
                 <Button size="sm" variant="outline" onClick={() => setCallFor(lead.id)}>
                   <Phone className="mr-1 size-4" /> Log call
                 </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setChatWith({ id: lead.id, name: lead.full_name })}
+                >
+                  <MessageSquare className="mr-1 size-4" /> Chat
+                  {(unread.data?.[lead.id] ?? 0) > 0 && (
+                    <span className="ml-1 rounded-full bg-primary px-2 py-0.5 text-[10px] text-primary-foreground">
+                      {unread.data![lead.id]}
+                    </span>
+                  )}
+                </Button>
                 {nextStages(lead.stage as AdmissionStage)
                   .slice(0, 2)
                   .map((stage) => (
@@ -154,6 +174,15 @@ function MyLeadsPage() {
           ))}
         </div>
       )}
+
+      <Dialog open={Boolean(chatWith)} onOpenChange={(o) => !o && setChatWith(null)}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Chat with {chatWith?.name}</DialogTitle>
+          </DialogHeader>
+          {chatWith && <ChatThread studentId={chatWith.id} />}
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={Boolean(callFor)} onOpenChange={(o) => !o && setCallFor(null)}>
         <DialogContent>

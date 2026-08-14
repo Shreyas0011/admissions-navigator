@@ -164,18 +164,33 @@ function AuthPage() {
             Continue with Google
           </Button>
 
-          <Link
-            to="/seminar-day"
-            className="mt-4 flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm text-foreground hover:bg-surface-container"
-          >
-            <span>
-              <span className="block font-medium">Seminar day mode</span>
-              <span className="block text-xs text-muted-foreground">
-                Ground staff check-in — name + seminar password
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Link
+              to="/seminar-day"
+              className="flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm text-foreground hover:bg-surface-container"
+            >
+              <span>
+                <span className="block font-medium">Seminar day mode</span>
+                <span className="block text-xs text-muted-foreground">
+                  Name + seminar password
+                </span>
               </span>
-            </span>
-            <ScanLine className="size-4 text-primary" />
-          </Link>
+              <ScanLine className="size-4 text-primary" />
+            </Link>
+            <Link
+              to="/exam-day"
+              className="flex items-center justify-between rounded-xl border border-border px-4 py-3 text-sm text-foreground hover:bg-surface-container"
+            >
+              <span>
+                <span className="block font-medium">Exam day mode</span>
+                <span className="block text-xs text-muted-foreground">
+                  Name + exam password
+                </span>
+              </span>
+              <ScanLine className="size-4 text-primary" />
+            </Link>
+          </div>
+
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             New student? Your account is created with your application.{" "}
