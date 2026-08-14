@@ -138,5 +138,6 @@ export async function parseUpload(file: File): Promise<ParsedRow[]> {
       };
     })
     .filter((row) => Object.values(row.raw).some((v) => v !== ""))
-    .filter((row) => row.raw["full_name"] !== BULK_COLUMN_HINTS.full_name);
+    .filter((row) => row.raw["full_name"] !== BULK_COLUMN_HINTS.full_name)
+    .filter((row) => row.raw["email"] !== SAMPLE_BULK_ROW.email);
 }
