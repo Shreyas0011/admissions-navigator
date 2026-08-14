@@ -29,13 +29,16 @@ export function FirstLoginGate({ children }: { children: React.ReactNode }) {
   const mutation = useMutation({
     mutationFn: async () => {
       if (password !== confirmPassword) throw new Error("Passwords do not match");
-      const { error } = await supabase.auth.updateUser({ password });
-      if (error) throw new Error(error.message);
-      return completeFirstLoginResetFn({ data: { password, confirmPassword } });
+      const result = await completeFirstLoginResetFn({ data: { password, confirmPassword } });
+      // Refresh the local session so it carries the new credentials.
+      await supabase.auth.refreshSession();
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Password updated — welcome aboard");
-      queryClient.invalidateQueries({ queryKey: ["my-counsellor"] });
+      setPassword("");
+      setConfirmPassword("");
+      await queryClient.invalidateQueries({ queryKey: ["my-counsellor"] });
     },
     onError: (error: Error) => toast.error(error.message),
   });

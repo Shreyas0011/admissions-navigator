@@ -67,5 +67,5 @@ export const completeFirstLoginResetFn = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => passwordResetSchema.parse(data))
   .handler(async ({ data, context }) => {
     const { completeFirstLoginReset } = await import("@/domains/counsellors/profile.server");
-    return completeFirstLoginReset(context.userId);
+    return completeFirstLoginReset(context.userId, data.password);
   });

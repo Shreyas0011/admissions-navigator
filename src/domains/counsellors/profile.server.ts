@@ -40,13 +40,18 @@ export async function updateMyCounsellorProfile(userId: string, input: Counsello
   return { ok: true };
 }
 
-/** First login: the browser updates its own password, then this clears the gate. */
-export async function completeFirstLoginReset(userId: string) {
-  const { error: flagError } = await supabaseAdmin
+/** First login: set the new password with admin rights, then clear the gate. */
+export async function completeFirstLoginReset(userId: string, password: string) {
+  const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(userId, { password });
+  if (authError) throw new Error(authError.message);
+
+  const { data, error: flagError } = await supabaseAdmin
     .from("counsellors")
     .update({ must_reset_password: false })
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .select("id");
   if (flagError) throw new Error(flagError.message);
+  if (!data?.length) throw new Error("No counsellor profile is linked to this account");
 
   return { ok: true };
 }
