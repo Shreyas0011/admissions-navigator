@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, MapPin, Users, Wand2 } from "lucide-react";
+import { CalendarClock, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
 
 import { SessionAttendancePanel } from "@/components/attendance/SessionAttendancePanel";
@@ -8,7 +8,7 @@ import { PageHeader } from "@/components/shared/PageHeader";
 import { StatCard } from "@/components/shared/StatCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { autoAllocateFn, getEventFn, publishEventFn } from "@/domains/events/events.functions";
+import { getEventFn, publishEventFn } from "@/domains/events/events.functions";
 import { formatDateTime } from "@/lib/datetime";
 import { AdminOnly } from "@/components/shared/AdminOnly";
 
@@ -42,15 +42,6 @@ function EventDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const allocate = useMutation({
-    mutationFn: () => autoAllocateFn({ data: { id: eventId } }),
-    onSuccess: (result) => {
-      toast.success(result.message);
-      refresh();
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
   if (isLoading || !data) return <Skeleton className="h-72 rounded-2xl" />;
   const { event, bookings } = data;
 
@@ -59,16 +50,13 @@ function EventDetailPage() {
       <PageHeader
         eyebrow={event.event_type}
         title={event.title}
-        description={`Allocation ${event.allocation_strategy.replace(/_/g, " ")} · target stage ${event.target_stage ?? "any"}`}
+        description={`Open to ${event.programmes?.name ?? "all programmes"} · target stage ${event.target_stage ?? "any"}`}
         actions={
           <>
             <StatCard label="Capacity" value={event.capacity} />
             <StatCard label="Booked" value={event.booked} accent />
             <Button variant="outline" onClick={() => publish.mutate(!event.is_open)}>
               {event.is_open ? "Unpublish" : "Publish"}
-            </Button>
-            <Button disabled={allocate.isPending} onClick={() => allocate.mutate()}>
-              <Wand2 className="size-4" /> Auto-allocate
             </Button>
           </>
         }
