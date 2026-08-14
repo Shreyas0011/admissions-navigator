@@ -40,11 +40,8 @@ export async function updateMyCounsellorProfile(userId: string, input: Counsello
   return { ok: true };
 }
 
-/** First login: set a new password and clear the forced-reset flag. */
-export async function completeFirstLoginReset(userId: string, password: string) {
-  const { error } = await supabaseAdmin.auth.admin.updateUserById(userId, { password });
-  if (error) throw new Error(error.message);
-
+/** First login: the browser updates its own password, then this clears the gate. */
+export async function completeFirstLoginReset(userId: string) {
   const { error: flagError } = await supabaseAdmin
     .from("counsellors")
     .update({ must_reset_password: false })
