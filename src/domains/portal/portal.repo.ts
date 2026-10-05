@@ -27,8 +27,13 @@ export async function selectStudentByUser(userId: string): Promise<PortalStudent
   if (data) return data as unknown as PortalStudent;
 
   // Fallback: the auth account exists but was never linked to its student row.
-  const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
-  const email = authUser?.user?.email?.toLowerCase();
+  let email: string | undefined;
+  try {
+    const { data: authUser } = await supabaseAdmin.auth.admin.getUserById(userId);
+    email = authUser?.user?.email?.toLowerCase();
+  } catch {
+    email = undefined;
+  }
   if (!email) return null;
 
   const { data: byEmail, error: emailError } = await supabaseAdmin
